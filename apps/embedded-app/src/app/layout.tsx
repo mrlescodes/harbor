@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 import { Providers } from "@/providers";
+import { env } from "@/env";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +27,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Using the Next.js Metadata API causes these tags to get moved to the body which breaks the AppBridge */}
+        <meta
+          name="shopify-api-key"
+          content={env.NEXT_PUBLIC_SHOPIFY_API_KEY}
+        />
+        <meta
+          name="shopify-app-origins"
+          content={env.NEXT_PUBLIC_SHOPIFY_APP_URL}
+        />
+
+        {/* Next.js <Script /> tag uses async which breaks the AppBridge */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" />
+      </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
