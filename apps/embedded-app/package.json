@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "next build",
+    "deploy": "pnpm run generate-config && shopify app deploy",
     "dev": "next dev --turbopack",
+    "generate-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts",
     "lint": "next lint",
-    "start": "next start",
-    "generate-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts"
+    "start": "next start"
   },
   "dependencies": {
     "@shopify/polaris": "^13.9.5",
