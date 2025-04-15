@@ -30,6 +30,7 @@
     "eslint": "^9.24.0",
     "eslint-config-next": "15.3.0",
     "jiti": "^1.21.7",
+    "prisma": "^6.6.0",
     "tailwindcss": "^4.1.4",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
