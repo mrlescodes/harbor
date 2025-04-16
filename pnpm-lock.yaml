@@ -54,6 +54,9 @@ importers:
       '@iarna/toml':
         specifier: ^2.2.5
         version: 2.2.5
+      '@shopify/app-bridge-types':
+        specifier: ^0.0.18
+        version: 0.0.18
       '@tailwindcss/postcss':
         specifier: ^4.1.4
         version: 4.1.4
@@ -652,6 +655,9 @@ packages:
 
   '@rushstack/eslint-patch@1.11.0':
     resolution: {integrity: sha512-zxnHvoMQVqewTJr/W4pKjF0bMGiKJv1WX7bSrkl46Hg0QjESbzBROWK0Wg4RphzSOS5Jiy7eFimmM3UgMrMZbQ==}
+
+  '@shopify/app-bridge-types@0.0.18':
+    resolution: {integrity: sha512-02AiWgn1op7qCKx6HXpFqBwJNPoqZ9g47hltch1ZD4bC+2vVuCgePlmJ+yEFWcN5tW9AG/a27Igsbi0LnY01gA==}
 
   '@shopify/polaris-icons@9.3.1':
     resolution: {integrity: sha512-16BIFAT93LJ8X4YRXz5cR9ZPHeErMg3DYS0gyTPNPkd0E5IBPoTxPINjn2b4Mr9Sc1x4RfI4AqPcV8ut0D1J5w==}
@@ -3292,6 +3298,8 @@ snapshots:
   '@rtsao/scc@1.1.0': {}
 
   '@rushstack/eslint-patch@1.11.0': {}
+
+  '@shopify/app-bridge-types@0.0.18': {}
 
   '@shopify/polaris-icons@9.3.1(react@19.1.0)':
     dependencies:

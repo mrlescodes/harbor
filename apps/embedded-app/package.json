@@ -25,6 +25,7 @@
     "@dotenvx/dotenvx": "^1.40.0",
     "@eslint/eslintrc": "^3.3.1",
     "@iarna/toml": "^2.2.5",
+    "@shopify/app-bridge-types": "^0.0.18",
     "@tailwindcss/postcss": "^4.1.4",
     "@types/node": "^20.17.30",
     "@types/react": "^19.1.2",
