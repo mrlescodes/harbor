@@ -1,9 +1,4 @@
-"use client";
-
-import "@shopify/polaris/build/esm/styles.css";
-import enTranslations from "@shopify/polaris/locales/en.json";
-import { AppProvider } from "@shopify/polaris";
-
+import { PolarisProvider } from "./polaris-provider";
 import { SessionProvider } from "./session-provider";
 
 type ProvidersProps = {
@@ -14,8 +9,8 @@ export const Providers = (props: ProvidersProps) => {
   const { children } = props;
 
   return (
-    <AppProvider i18n={enTranslations}>
+    <PolarisProvider>
       <SessionProvider>{children}</SessionProvider>
-    </AppProvider>
+    </PolarisProvider>
   );
 };
