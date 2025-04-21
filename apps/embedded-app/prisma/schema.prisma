@@ -14,6 +14,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Store {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  shop     String  @unique
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Session {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId   String    @unique
+  shop        String
+  state       String
+  isOnline    Boolean   @default(false)
+  scope       String?
+  expires     DateTime?
+  accessToken String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
