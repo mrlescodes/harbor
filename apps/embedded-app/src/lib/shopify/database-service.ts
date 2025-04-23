@@ -21,7 +21,40 @@ const findStore = async (shop: string) => {
   });
 };
 
+export interface ShopeeTokenResponse {
+  access_token: string;
+  refresh_token: string;
+  expire_in: number; // seconds until token expires
+  error?: string;
+  message?: string;
+}
+
+/**
+ * Store Shopee OAuth credentials for a store
+ */
+const storeShopeeCredentials = async (
+  shop: string,
+  shopeeShopId: string,
+  tokens: ShopeeTokenResponse
+) => {
+  // Calculate token expiry date
+  const expiresAt = new Date();
+  expiresAt.setSeconds(expiresAt.getSeconds() + tokens.expire_in);
+
+  return await prisma.store.update({
+    where: { shop },
+    data: {
+      shopeeShopId: parseInt(shopeeShopId),
+      shopeeAccessToken: tokens.access_token,
+      shopeeRefreshToken: tokens.refresh_token,
+      shopeeConnected: true,
+      shopeeTokenExpiresAt: expiresAt,
+    },
+  });
+};
+
 export const databaseService = {
   initialiseStore,
   findStore,
+  storeShopeeCredentials,
 };

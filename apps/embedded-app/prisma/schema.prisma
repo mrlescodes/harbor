@@ -19,6 +19,12 @@ model Store {
   shop     String  @unique
   isActive Boolean @default(true)
 
+  shopeeShopId         Int?
+  shopeeAccessToken    String?
+  shopeeRefreshToken   String?
+  shopeeConnected      Boolean?  @default(false)
+  shopeeTokenExpiresAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
