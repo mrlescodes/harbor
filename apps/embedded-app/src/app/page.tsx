@@ -1,12 +1,14 @@
 "use client";
 
-import { Button, Card, Page } from "@shopify/polaris";
+import { Card, Page } from "@shopify/polaris";
+
+import { ShopeeConnectButton } from "@/components/shopee-connect-button";
 
 export default function Home() {
   return (
     <Page title="Shopify App Template - Next.js">
       <Card>
-        <Button onClick={() => alert("Button clicked!")}>Example button</Button>
+        <ShopeeConnectButton />
       </Card>
     </Page>
   );
