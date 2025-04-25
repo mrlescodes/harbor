@@ -2,6 +2,12 @@
   "name": "@workspace/shopee-api-client",
   "version": "0.0.0",
   "private": true,
+  "exports": {
+    "./config": {
+      "types": "./src/config.ts",
+      "default": "./dist/config.js"
+    }
+  },
   "module": "true",
   "scripts": {
     "build": "tsc",
