@@ -2,7 +2,7 @@ import { Effect, Context, Layer } from "effect";
 
 export type ShopeeAPIConfigParams = {
   readonly apiBaseUrl: string;
-  readonly partnerId: string;
+  readonly partnerId: number;
   readonly partnerKey: string;
 };
 
