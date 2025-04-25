@@ -20,17 +20,22 @@ const makeShopeeAuthClient = Effect.gen(function* () {
     HttpClient.mapRequest(HttpClientRequest.prependUrl(apiBaseUrl))
   );
 
-  const prepareAuthRequest = (apiPath: string) => {
+  const prepareAuthSearchParams = (apiPath: string) => {
     const timestamp = getCurrentTimestamp();
 
     const baseString = `${partnerId}${apiPath}${timestamp}`;
     const signature = generateSignature(partnerKey, baseString);
 
-    // Common parameters for auth requests
     const searchParams = new URLSearchParams();
     searchParams.append("partner_id", partnerId.toString());
     searchParams.append("timestamp", timestamp.toString());
     searchParams.append("sign", signature);
+
+    return searchParams;
+  };
+
+  const prepareAuthRequest = (apiPath: string) => {
+    const searchParams = prepareAuthSearchParams(apiPath);
 
     return baseClient.pipe(
       HttpClient.mapRequest((request) =>
@@ -40,6 +45,25 @@ const makeShopeeAuthClient = Effect.gen(function* () {
   };
 
   return {
+    /**
+     * @see https://open.shopee.com/developer-guide/20
+     */
+    getAuthUrl: (redirectUrl: string) => {
+      const apiPath = "/api/v2/shop/auth_partner";
+      const searchParams = prepareAuthSearchParams(apiPath);
+
+      // Add the redirect parameter
+      searchParams.append("redirect", redirectUrl);
+
+      const url = new URL(`${apiBaseUrl}${apiPath}`);
+
+      searchParams.forEach((value, key) => {
+        url.searchParams.append(key, value);
+      });
+
+      return url.toString();
+    },
+
     /**
      * @see https://open.shopee.com/documents/v2/v2.public.get_access_token?module=104&type=1
      */
