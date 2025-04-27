@@ -1,10 +1,22 @@
 "use server";
 
-import { generateShoppeeAuthUrl } from "./auth";
+import { Effect } from "effect";
 
-/**
- * Server action to generate Shopee auth URL and return it
- */
-export async function getShopeeAuthUrl(shop: string) {
-  return generateShoppeeAuthUrl(shop);
-}
+import { ShopeeAuthClient } from "@workspace/shopee-api-client/auth";
+
+import { runWithShopeeAuthClient } from "./client";
+import { env } from "@/env";
+
+export const getShopeeAuthUrl = async (shop: string) => {
+  const redirectUrl = `${env.NEXT_PUBLIC_SHOPIFY_APP_URL}/api/shopee/auth-callback/${shop}`;
+
+  const program = Effect.gen(function* () {
+    const shopeeAuthClient = yield* ShopeeAuthClient;
+
+    return shopeeAuthClient.getAuthUrl(redirectUrl);
+  });
+
+  const runnable = runWithShopeeAuthClient(program);
+
+  return Effect.runPromise(runnable);
+};

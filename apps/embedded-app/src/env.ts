@@ -22,7 +22,7 @@ export const env = createEnv({
     SHOPIFY_API_SECRET: z.string().min(1),
     SHOPIFY_ACCESS_SCOPES: z.string().min(1),
 
-    SHOPEE_PARTNER_ID: z.string().min(1),
+    SHOPEE_PARTNER_ID: z.string().transform((val) => parseInt(val, 10)),
     SHOPEE_PARTNER_KEY: z.string().min(64).max(64),
     SHOPEE_API_BASE_URL: z.string().url(),
   },

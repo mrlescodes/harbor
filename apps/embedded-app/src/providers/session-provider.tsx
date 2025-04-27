@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
 import { handleInitialLoad } from "@/lib/shopify/actions";
 
@@ -9,9 +9,7 @@ type SessionProviderProps = {
   children: React.ReactNode;
 };
 
-export const SessionProvider = (props: SessionProviderProps) => {
-  const { children } = props;
-
+function SessionHandler() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -21,5 +19,19 @@ export const SessionProvider = (props: SessionProviderProps) => {
     handleInitialLoad({ shop, idToken });
   }, [searchParams]);
 
-  return <>{children}</>;
+  return null;
+}
+
+export const SessionProvider = (props: SessionProviderProps) => {
+  const { children } = props;
+
+  return (
+    <>
+      <Suspense fallback={null}>
+        <SessionHandler />
+      </Suspense>
+
+      {children}
+    </>
+  );
 };

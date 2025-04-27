@@ -6,12 +6,12 @@ import { Button } from "@shopify/polaris";
 import { useAppBridge } from "@/components/app-bridge";
 import { getShopeeAuthUrl } from "@/lib/shopee/actions";
 
-export const ShopeeConnectButton = () => {
+export const ShopeeConnectionButton = () => {
   const app = useAppBridge();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // TODO: Put inside a modal
+  // TODO: Move to confirmation modal
   const handleConnect = async () => {
     setIsLoading(true);
 
@@ -20,18 +20,18 @@ export const ShopeeConnectButton = () => {
     }
 
     try {
+      // TODO: Route endpoint
       const shopeeAuthUrl = await getShopeeAuthUrl(app.config.shop);
 
       open(shopeeAuthUrl, "_top");
     } catch (error) {
       console.error("Failed to connect with Shopee:", error);
-      // Handle error as needed
     } finally {
       setIsLoading(false);
     }
   };
 
-  // TODO: Add check for is connected and show disconnect instead
+  // TODO: Add support for disconnect
   return (
     <Button onClick={handleConnect} disabled={isLoading}>
       {isLoading ? "Connecting..." : "Connect Shopee Store"}

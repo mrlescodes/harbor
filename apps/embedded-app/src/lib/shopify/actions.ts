@@ -28,6 +28,6 @@ export const handleInitialLoad = async ({
       }
     }
   } catch (error) {
-    console.log("Initial load error");
+    console.log("Initial load error", error);
   }
 };
