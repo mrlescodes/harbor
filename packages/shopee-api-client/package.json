@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
+    "./auth": {
+      "types": "./src/auth/index.ts",
+      "default": "./auth/index.js"
+    },
     "./config": {
       "types": "./src/config.ts",
       "default": "./dist/config.js"
