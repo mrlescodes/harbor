@@ -17,7 +17,7 @@ const makeShopeeAuthClient = Effect.gen(function* () {
   const { apiBaseUrl, partnerId, partnerKey } = yield* config.getConfig;
 
   const baseClient = defaultClient.pipe(
-    HttpClient.mapRequest(HttpClientRequest.prependUrl(apiBaseUrl))
+    HttpClient.mapRequest(HttpClientRequest.prependUrl(apiBaseUrl)),
   );
 
   const prepareAuthSearchParams = (apiPath: string) => {
@@ -39,8 +39,8 @@ const makeShopeeAuthClient = Effect.gen(function* () {
 
     return baseClient.pipe(
       HttpClient.mapRequest((request) =>
-        request.pipe(HttpClientRequest.appendUrlParams(searchParams))
-      )
+        request.pipe(HttpClientRequest.appendUrlParams(searchParams)),
+      ),
     );
   };
 
@@ -79,14 +79,14 @@ const makeShopeeAuthClient = Effect.gen(function* () {
             shop_id: shopId,
             partner_id: partnerId,
             code,
-          })
+          }),
         );
 
         const response = yield* client.execute(req);
 
         // TODO: Handle invalid code response explicitly
         return yield* HttpClientResponse.schemaBodyJson(GetAccessTokenResponse)(
-          response
+          response,
         );
       }).pipe(Effect.scoped);
     },
@@ -106,14 +106,14 @@ const makeShopeeAuthClient = Effect.gen(function* () {
             shop_id: shopId,
             partner_id: partnerId,
             refresh_token: refreshToken,
-          })
+          }),
         );
 
         const response = yield* client.execute(req);
 
         // TODO: Handle invalid refresh token response explicitly
         return yield* HttpClientResponse.schemaBodyJson(
-          RefreshAccessTokenResponse
+          RefreshAccessTokenResponse,
         )(response);
       }).pipe(Effect.scoped);
     },
@@ -126,6 +126,6 @@ export class ShopeeAuthClient extends Context.Tag("ShopeeAuthClient")<
 >() {
   static readonly Live = Layer.effect(
     ShopeeAuthClient,
-    makeShopeeAuthClient
+    makeShopeeAuthClient,
   ).pipe(Layer.provide(FetchHttpClient.layer));
 }

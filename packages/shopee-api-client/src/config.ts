@@ -18,6 +18,6 @@ export const createShopeeAPIConfigLayer = (config: ShopeeAPIConfigParams) => {
     ShopeeAPIConfig,
     ShopeeAPIConfig.of({
       getConfig: Effect.succeed(config),
-    })
+    }),
   );
 };
