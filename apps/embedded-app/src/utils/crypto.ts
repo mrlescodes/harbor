@@ -14,7 +14,7 @@ export const encrypt = (text: string) => {
   const cipher = crypto.createCipheriv(
     "aes-256-cbc",
     Buffer.from(ENCRYPTION_KEY, "hex"),
-    iv
+    iv,
   );
 
   let encrypted = cipher.update(text, "utf8", "hex");
@@ -32,7 +32,7 @@ export const decrypt = (text: string) => {
   const decipher = crypto.createDecipheriv(
     "aes-256-cbc",
     Buffer.from(ENCRYPTION_KEY, "hex"),
-    iv
+    iv,
   );
 
   let decrypted = decipher.update(encryptedHex, "hex", "utf8");

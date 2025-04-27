@@ -35,7 +35,7 @@ export interface ShopeeTokenResponse {
 const storeShopeeCredentials = async (
   shop: string,
   shopeeShopId: string,
-  tokens: ShopeeTokenResponse
+  tokens: ShopeeTokenResponse,
 ) => {
   // Calculate token expiry date
   const expiresAt = new Date();

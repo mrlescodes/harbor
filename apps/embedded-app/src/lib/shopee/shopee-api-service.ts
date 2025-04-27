@@ -25,7 +25,7 @@ const createErrorResponse = (message: string): ShopeeTokenResponse => {
 
 const exchangeCodeForTokens = async (
   code: string,
-  shopId: string
+  shopId: string,
 ): Promise<ShopeeTokenResponse> => {
   const partnerId = env.SHOPEE_PARTNER_ID;
   const partnerKey = env.SHOPEE_PARTNER_KEY;
@@ -67,7 +67,7 @@ const exchangeCodeForTokens = async (
   } catch (error) {
     console.error("Error exchanging code for tokens:", error);
     return createErrorResponse(
-      error instanceof Error ? error.message : "Unknown error"
+      error instanceof Error ? error.message : "Unknown error",
     );
   }
 };

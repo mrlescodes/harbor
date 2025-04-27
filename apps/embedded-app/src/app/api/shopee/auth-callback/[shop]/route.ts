@@ -5,7 +5,7 @@ import { databaseService } from "@/lib/shopify/database-service";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ shop: string }> }
+  { params }: { params: Promise<{ shop: string }> },
 ) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
@@ -28,6 +28,6 @@ export async function GET(
 
   // TODO: Success / Fail param
   return NextResponse.redirect(
-    `https://admin.shopify.com/store/${shopName[0]}/apps/wharf-next-app`
+    `https://admin.shopify.com/store/${shopName[0]}/apps/wharf-next-app`,
   );
 }

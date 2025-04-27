@@ -8,7 +8,7 @@ import { getCurrentTimestamp } from "@/utils/date";
 export const createBaseString = (
   partnerId: string,
   apiPath: string,
-  timestamp: number
+  timestamp: number,
 ) => {
   return `${partnerId}${apiPath}${timestamp}`;
 };
@@ -27,7 +27,7 @@ interface AuthUrlParams {
 const buildAuthUrl = (
   baseUrl: string,
   apiPath: string,
-  params: AuthUrlParams
+  params: AuthUrlParams,
 ) => {
   const url = new URL(`${baseUrl}${apiPath}`);
   url.searchParams.append("partner_id", params.partnerId.toString());
