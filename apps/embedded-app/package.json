@@ -9,9 +9,9 @@
     "dev": "next dev --turbopack",
     "generate-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts",
     "lint": "next lint",
-    "start": "next start",
     "prisma:generate": "dotenvx run -f .env.local -- pnpm prisma generate",
-    "prisma:push": "dotenvx run -f .env.local -- pnpm prisma db push"
+    "prisma:push": "dotenvx run -f .env.local -- pnpm prisma db push",
+    "start": "next start"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",

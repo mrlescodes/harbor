@@ -1,0 +1,30 @@
+{
+  "name": "@workspace/shopee-api-client",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./auth": {
+      "types": "./src/auth/index.ts",
+      "default": "./auth/index.js"
+    },
+    "./config": {
+      "types": "./src/config.ts",
+      "default": "./dist/config.js"
+    }
+  },
+  "module": "true",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@effect/platform": "^0.80.13",
+    "effect": "^3.14.13"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
+  }
+}
