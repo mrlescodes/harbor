@@ -2,13 +2,13 @@
 
 import { Card, Page } from "@shopify/polaris";
 
-import { ShopeeConnectButton } from "@/components/shopee-connect-button";
+import { ShopeeConnectionButton } from "@/components/shopee-connection-button";
 
 export default function Home() {
   return (
-    <Page title="Shopify App Template - Next.js">
+    <Page title="Settings">
       <Card>
-        <ShopeeConnectButton />
+        <ShopeeConnectionButton />
       </Card>
     </Page>
   );

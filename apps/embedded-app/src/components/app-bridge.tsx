@@ -21,6 +21,7 @@ import {
 import { createPortal } from "react-dom";
 
 declare module "react" {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
       "ui-modal": UIModalAttributes & ReactRefAttributes<UIModalElement>;
@@ -92,7 +93,7 @@ export function Modal({
       modalContent: ReactNode[];
       saveBar?: ReactNode;
       titleBar?: ReactNode;
-    },
+    }
   );
   const modalContentPortal = component?.content
     ? createPortal(modalContent, component.content, props.id)
@@ -119,6 +120,7 @@ export function Modal({
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface NavMenuProps extends PropsWithChildren<UINavMenuAttributes> {}
 
 export function NavMenu({ children }: NavMenuProps) {
@@ -201,17 +203,17 @@ export function useAppBridge() {
         get(_, prop) {
           throw Error(
             `shopify.${String(
-              prop,
-            )} can't be used in a server environment. You likely need to move this code into an Effect.`,
+              prop
+            )} can't be used in a server environment. You likely need to move this code into an Effect.`
           );
         },
-      },
+      }
     ) as unknown as ShopifyGlobal;
   }
 
   if (!window.shopify) {
     throw Error(
-      "The shopify global is not defined. This likely means the App Bridge script tag was not added correctly to this page",
+      "The shopify global is not defined. This likely means the App Bridge script tag was not added correctly to this page"
     );
   }
 
