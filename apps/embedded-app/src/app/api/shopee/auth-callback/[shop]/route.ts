@@ -8,7 +8,7 @@ import { runWithShopeeAuthClient } from "@/lib/shopee/client";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ shop: string }> }
+  { params }: { params: Promise<{ shop: string }> },
 ) {
   const searchParams = request.nextUrl.searchParams;
 
@@ -26,7 +26,7 @@ export async function GET(
 
     // TODO: Redirect with failed auth params
     return NextResponse.redirect(
-      `https://admin.shopify.com/store/${shopName[0]}/apps/wharf-next-app`
+      `https://admin.shopify.com/store/${shopName[0]}/apps/wharf-next-app`,
     );
   }
 
@@ -45,6 +45,6 @@ export async function GET(
 
   // TODO: Use app id to allow for easy renaming of app?
   return NextResponse.redirect(
-    `https://admin.shopify.com/store/${shopName[0]}/apps/wharf-next-app`
+    `https://admin.shopify.com/store/${shopName[0]}/apps/wharf-next-app`,
   );
 }
