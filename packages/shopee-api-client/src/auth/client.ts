@@ -20,7 +20,7 @@ const makeShopeeAuthClient = Effect.gen(function* () {
     HttpClient.mapRequest(HttpClientRequest.prependUrl(apiBaseUrl)),
   );
 
-  const prepareAuthSearchParams = (apiPath: string) => {
+  const prepareSearchParams = (apiPath: string) => {
     const timestamp = getCurrentTimestamp();
 
     const baseString = `${partnerId}${apiPath}${timestamp}`;
@@ -34,8 +34,8 @@ const makeShopeeAuthClient = Effect.gen(function* () {
     return searchParams;
   };
 
-  const prepareAuthRequest = (apiPath: string) => {
-    const searchParams = prepareAuthSearchParams(apiPath);
+  const prepareRequest = (apiPath: string) => {
+    const searchParams = prepareSearchParams(apiPath);
 
     return baseClient.pipe(
       HttpClient.mapRequest((request) =>
@@ -50,7 +50,7 @@ const makeShopeeAuthClient = Effect.gen(function* () {
      */
     getAuthUrl: (redirectUrl: string) => {
       const apiPath = "/api/v2/shop/auth_partner";
-      const searchParams = prepareAuthSearchParams(apiPath);
+      const searchParams = prepareSearchParams(apiPath);
 
       // Add the redirect parameter
       searchParams.append("redirect", redirectUrl);
@@ -71,10 +71,12 @@ const makeShopeeAuthClient = Effect.gen(function* () {
       const apiPath = "/api/v2/auth/token/get";
 
       return Effect.gen(function* () {
-        const client = prepareAuthRequest(apiPath);
+        const client = prepareRequest(apiPath);
 
         const req = yield* HttpClientRequest.post(apiPath).pipe(
-          HttpClientRequest.setHeaders({ "Content-Type": "application/json" }),
+          HttpClientRequest.setHeaders({
+            "Content-Type": "application/json",
+          }),
           HttpClientRequest.bodyJson({
             shop_id: shopId,
             partner_id: partnerId,
@@ -98,10 +100,12 @@ const makeShopeeAuthClient = Effect.gen(function* () {
       const apiPath = "/api/v2/auth/access_token/get";
 
       return Effect.gen(function* () {
-        const client = prepareAuthRequest(apiPath);
+        const client = prepareRequest(apiPath);
 
         const req = yield* HttpClientRequest.post(apiPath).pipe(
-          HttpClientRequest.setHeaders({ "Content-Type": "application/json" }),
+          HttpClientRequest.setHeaders({
+            "Content-Type": "application/json",
+          }),
           HttpClientRequest.bodyJson({
             shop_id: shopId,
             partner_id: partnerId,
