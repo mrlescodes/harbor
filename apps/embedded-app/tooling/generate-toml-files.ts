@@ -27,7 +27,7 @@ const appConfig: Record<string, any> = {
     api_version: "2025-04",
   },
   access_scopes: {
-    scopes: "read_orders,write_orders",
+    scopes: env.SHOPIFY_ACCESS_SCOPES,
   },
   access: {
     admin: {
