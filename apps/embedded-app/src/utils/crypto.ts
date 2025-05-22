@@ -28,6 +28,11 @@ export const encrypt = (text: string) => {
  */
 export const decrypt = (text: string) => {
   const [ivHex, encryptedHex] = text.split(":");
+
+  if (!ivHex || !encryptedHex) {
+    throw new Error("Invalid encrypted text format");
+  }
+
   const iv = Buffer.from(ivHex, "hex");
   const decipher = crypto.createDecipheriv(
     "aes-256-cbc",
