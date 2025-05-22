@@ -5,16 +5,16 @@
   "type": "module",
   "exports": {
     "./api": {
-      "types": "./src/api/index.ts",
-      "default": "./dist/api/index.js"
+      "types": "./dist/api/index.d.ts",
+      "default": "./src/api/index.ts"
     },
     "./auth": {
-      "types": "./src/auth/index.ts",
-      "default": "./dist/auth/index.js"
+      "types": "./dist/auth/index.d.ts",
+      "default": "./src/auth/index.ts"
     },
     "./config": {
-      "types": "./src/config.ts",
-      "default": "./dist/config.js"
+      "types": "./dist/config.d.ts",
+      "default": "./src/config.ts"
     }
   },
   "license": "MIT",
