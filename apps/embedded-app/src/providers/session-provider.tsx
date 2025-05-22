@@ -5,9 +5,9 @@ import { useSearchParams } from "next/navigation";
 
 import { handleInitialLoad } from "~/lib/shopify/actions";
 
-type SessionProviderProps = {
+interface SessionProviderProps {
   children: React.ReactNode;
-};
+}
 
 function SessionHandler() {
   const searchParams = useSearchParams();

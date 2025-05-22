@@ -1,4 +1,4 @@
-import { Session as ShopifySession } from "@shopify/shopify-api";
+import type { Session as ShopifySession } from "@shopify/shopify-api";
 
 import { prisma } from "~/lib/database/prisma";
 import { encrypt } from "~/utils/crypto";
