@@ -6,12 +6,13 @@ import toml from "@iarna/toml";
 import { env } from "../src/env";
 
 // TODO: Error handling and more config from environment variables
+// TODO: App config interface to prevent creating incorrect config files
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Define app config
-const appConfig: Record<string, any> = {
+const appConfig = {
   client_id: env.NEXT_PUBLIC_SHOPIFY_API_KEY,
   name: "Wharf Next App",
   handle: "wharf-next-app",

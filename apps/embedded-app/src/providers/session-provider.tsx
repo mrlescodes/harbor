@@ -16,7 +16,8 @@ function SessionHandler() {
     const shop = searchParams.get("shop");
     const idToken = searchParams.get("id_token");
 
-    handleInitialLoad({ shop, idToken });
+    // TODO: Review this fix?
+    void handleInitialLoad({ shop, idToken });
   }, [searchParams]);
 
   return null;

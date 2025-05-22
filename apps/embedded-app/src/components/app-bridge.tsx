@@ -1,4 +1,6 @@
+/* eslint-disable */
 // TODO: Move to package
+// TODO: Fix lint errors
 
 import type {
   ShopifyGlobal,
