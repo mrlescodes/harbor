@@ -23,16 +23,10 @@ next-env.d.ts
 # Prisma
 **/generated/prisma
 
-# Sanity
-.sanity/
-
 # Shopify dev files and generated TOML files
 .shopify
 .shopify.lock
 shopify.*.toml
-
-# Storybook
-storybook-static
 
 # Turbo
 .turbo
