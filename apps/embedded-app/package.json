@@ -1,5 +1,5 @@
 {
-  "name": "harbor",
+  "name": "embedded-app",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -29,11 +29,11 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "^1.40.0",
     "@harbor/eslint-config": "workspace:*",
     "@harbor/prettier-config": "workspace:*",
     "@harbor/tailwind-config": "workspace:*",
     "@harbor/tsconfig": "workspace:*",
-    "@dotenvx/dotenvx": "^1.40.0",
     "@iarna/toml": "^2.2.5",
     "@shopify/app-bridge-types": "^0.0.18",
     "@types/node": "^22.15.3",
@@ -41,10 +41,10 @@
     "@types/react-dom": "catalog:react19",
     "eslint": "catalog:",
     "jiti": "^1.21.7",
-    "prisma": "^6.6.0",
-    "tsx": "^4.19.3",
     "prettier": "catalog:",
+    "prisma": "^6.6.0",
     "tailwindcss": "catalog:",
+    "tsx": "^4.19.3",
     "typescript": "catalog:"
   },
   "prettier": "@harbor/prettier-config"
