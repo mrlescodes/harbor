@@ -21,6 +21,10 @@ catalogs:
     zod:
       specifier: ^3.24.3
       version: 3.25.20
+  node22:
+    '@types/node':
+      specifier: ^22.15.3
+      version: 22.15.21
   react19:
     '@types/react':
       specifier: ^19.0.12
@@ -110,7 +114,7 @@ importers:
         specifier: ^0.0.18
         version: 0.0.18
       '@types/node':
-        specifier: ^22.15.3
+        specifier: catalog:node22
         version: 22.15.21
       '@types/react':
         specifier: catalog:react19
@@ -159,7 +163,7 @@ importers:
         specifier: workspace:*
         version: link:../../tooling/typescript
       '@types/node':
-        specifier: ^22.15.3
+        specifier: catalog:node22
         version: 22.15.21
       eslint:
         specifier: 'catalog:'
@@ -288,7 +292,7 @@ importers:
         specifier: workspace:*
         version: link:../typescript
       '@types/node':
-        specifier: ^22.15.3
+        specifier: catalog:node22
         version: 22.15.21
       typescript:
         specifier: 'catalog:'
@@ -316,7 +320,7 @@ importers:
         specifier: workspace:*
         version: link:../typescript
       '@types/node':
-        specifier: ^22.15.3
+        specifier: catalog:node22
         version: 22.15.21
       eslint:
         specifier: 'catalog:'
