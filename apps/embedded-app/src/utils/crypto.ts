@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { env } from "@/env";
+import { env } from "~/env";
 
 // Encryption configuration
 const ENCRYPTION_KEY = env.DATABASE_ENCRYPTION_KEY;

@@ -1,6 +1,6 @@
 "use client";
 
-import { ShopeeConnectionButton } from "@/components/shopee-connection-button";
+import { ShopeeConnectionButton } from "~/components/shopee-connection-button";
 import { Card, Page } from "@shopify/polaris";
 
 export default function Home() {

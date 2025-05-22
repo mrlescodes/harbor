@@ -1,4 +1,4 @@
-import { env } from "@/env";
+import { env } from "~/env";
 import { Effect, Layer } from "effect";
 
 import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";

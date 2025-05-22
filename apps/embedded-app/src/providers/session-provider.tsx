@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { handleInitialLoad } from "@/lib/shopify/actions";
+import { handleInitialLoad } from "~/lib/shopify/actions";
 
 type SessionProviderProps = {
   children: React.ReactNode;

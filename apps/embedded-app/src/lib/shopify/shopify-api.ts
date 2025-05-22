@@ -1,6 +1,6 @@
 import "@shopify/shopify-api/adapters/node";
 
-import { env } from "@/env";
+import { env } from "~/env";
 import {
   LATEST_API_VERSION,
   LogSeverity,

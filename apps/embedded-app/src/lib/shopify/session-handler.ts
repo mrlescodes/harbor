@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/database/prisma";
-import { encrypt } from "@/utils/crypto";
+import { prisma } from "~/lib/database/prisma";
+import { encrypt } from "~/utils/crypto";
 import { Session as ShopifySession } from "@shopify/shopify-api";
 
 /**
