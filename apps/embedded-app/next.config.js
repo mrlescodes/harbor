@@ -7,9 +7,7 @@ createJiti(fileURLToPath(import.meta.url))("./src/env");
 /** @type {import("next").NextConfig} */
 const config = {
   /** Enables hot reloading for local packages without a build step */
-  transpilePackages: [
-    "@harbor/shopee-api-client"
-  ],
+  transpilePackages: ["@harbor/shopee-api-client"],
 
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: true },

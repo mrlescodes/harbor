@@ -1,10 +1,10 @@
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { runWithShopeeAuthClient } from "@/lib/shopee/client";
+import { databaseService } from "@/lib/shopify/database-service";
 import { Effect } from "effect";
 
 import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
-
-import { databaseService } from "@/lib/shopify/database-service";
-import { runWithShopeeAuthClient } from "@/lib/shopee/client";
 
 export async function GET(
   request: NextRequest,

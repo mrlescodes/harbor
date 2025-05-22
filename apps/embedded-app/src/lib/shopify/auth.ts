@@ -1,6 +1,5 @@
-import { RequestedTokenType } from "@shopify/shopify-api";
-
 import { shopify } from "@/lib/shopify/shopify-api";
+import { RequestedTokenType } from "@shopify/shopify-api";
 
 export const exchangeShopifyToken = async ({
   shop,

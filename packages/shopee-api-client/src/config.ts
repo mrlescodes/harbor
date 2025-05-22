@@ -1,4 +1,4 @@
-import { Effect, Context, Layer } from "effect";
+import { Context, Effect, Layer } from "effect";
 
 export type ShopeeAPIConfigParams = {
   readonly apiBaseUrl: string;
