@@ -36,7 +36,7 @@
     "@harbor/tsconfig": "workspace:*",
     "@iarna/toml": "^2.2.5",
     "@shopify/app-bridge-types": "^0.0.18",
-    "@types/node": "^22.15.3",
+    "@types/node": "catalog:node22",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "eslint": "catalog:",
