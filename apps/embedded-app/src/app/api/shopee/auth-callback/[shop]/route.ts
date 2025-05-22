@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { Effect } from "effect";
 
-import { ShopeeAuthClient } from "@workspace/shopee-api-client/auth";
+import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
 
 import { databaseService } from "@/lib/shopify/database-service";
 import { runWithShopeeAuthClient } from "@/lib/shopee/client";

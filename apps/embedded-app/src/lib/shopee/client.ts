@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
 
-import { createShopeeAPIConfigLayer } from "@workspace/shopee-api-client/config";
-import { ShopeeAuthClient } from "@workspace/shopee-api-client/auth";
+import { createShopeeAPIConfigLayer } from "@harbor/shopee-api-client/config";
+import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
 
 import { env } from "@/env";
 

@@ -2,7 +2,7 @@
 
 import { Effect } from "effect";
 
-import { ShopeeAuthClient } from "@workspace/shopee-api-client/auth";
+import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
 
 import { runWithShopeeAuthClient } from "./client";
 import { env } from "@/env";

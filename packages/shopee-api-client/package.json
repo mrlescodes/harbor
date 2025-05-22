@@ -1,7 +1,8 @@
 {
-  "name": "@workspace/shopee-api-client",
+  "name": "@harbor/shopee-api-client",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "exports": {
     "./api": {
       "types": "./src/api/index.ts",
@@ -16,19 +17,26 @@
       "default": "./dist/config.js"
     }
   },
-  "module": "true",
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist",
-    "dev": "tsc -w"
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
   },
   "dependencies": {
     "@effect/platform": "^0.80.13",
     "effect": "^3.14.13"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
+    "@harbor/eslint-config": "workspace:*",
+    "@harbor/prettier-config": "workspace:*",
+    "@harbor/tsconfig": "workspace:*",
     "@types/node": "^22.14.1",
-    "typescript": "^5.8.3"
-  }
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@harbor/prettier-config"
 }
