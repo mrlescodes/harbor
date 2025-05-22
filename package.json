@@ -11,14 +11,16 @@
     "lint": "turbo run lint"
   },
   "devDependencies": {
-    "prettier": "^3.5.3",
+    "@harbor/prettier-config": "workspace:*",
+    "prettier": "catalog:",
     "sort-package-json": "^3.0.0",
-    "turbo": "^2.5.0",
-    "typescript": "5.8.2"
+    "turbo": "^2.5.1",
+    "typescript": "catalog:"
   },
   "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=20.x",
     "pnpm": ">=9.x"
-  }
+  },
+  "prettier": "@harbor/prettier-config"
 }
