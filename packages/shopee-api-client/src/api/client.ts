@@ -12,6 +12,7 @@ import { generateSignature, getCurrentTimestamp } from "../utils";
 import {
   GetOrderDetailResponse,
   GetOrderListResponse,
+  GetProductDetailResponse,
   GetProductListResponse,
 } from "./schema";
 
@@ -105,10 +106,10 @@ const makeShopeeAPIClient = Effect.gen(function* () {
      */
     getOrderList: (
       shopId: number,
-      params: {
-        timeRangeField: "create_time" | "update_time";
-        timeFrom: number;
-        timeTo: number;
+      params?: {
+        timeRangeField?: "create_time" | "update_time";
+        timeFrom?: number;
+        timeTo?: number;
         pageSize?: number;
         cursor?: string;
         orderStatusList?: string[];
@@ -116,23 +117,34 @@ const makeShopeeAPIClient = Effect.gen(function* () {
     ) => {
       const apiPath = "/api/v2/order/get_order_list";
 
+      const now = Math.floor(Date.now() / 1000);
+      const oneDayAgo = now - 86400;
+
+      const {
+        timeRangeField = "create_time",
+        timeFrom = oneDayAgo,
+        timeTo = now,
+        pageSize = 20,
+        cursor,
+        orderStatusList,
+      } = params ?? {};
+
       const additionalParams: Record<string, string> = {
-        time_range_field: params.timeRangeField,
-        time_from: params.timeFrom.toString(),
-        time_to: params.timeTo.toString(),
-        page_size: (params.pageSize ?? 20).toString(),
+        time_range_field: timeRangeField,
+        time_from: timeFrom.toString(),
+        time_to: timeTo.toString(),
+        page_size: pageSize.toString(),
       };
 
-      if (params.cursor) {
-        additionalParams.cursor = params.cursor;
+      if (cursor) {
+        additionalParams.cursor = cursor;
       }
 
-      if (params.orderStatusList?.length) {
-        additionalParams.order_status = params.orderStatusList.join(",");
+      if (orderStatusList?.length) {
+        additionalParams.order_status = orderStatusList.join(",");
       }
 
       return Effect.gen(function* () {
-        // Auth client handles token validation and refresh
         const accessToken = yield* authClient.getValidAccessToken(shopId);
 
         const client = prepareRequest(
@@ -144,7 +156,6 @@ const makeShopeeAPIClient = Effect.gen(function* () {
         const req = HttpClientRequest.get(apiPath);
         const response = yield* client.execute(req);
 
-        // You'll need to define GetOrderListResponse schema
         return yield* HttpClientResponse.schemaBodyJson(GetOrderListResponse)(
           response,
         );
@@ -153,18 +164,24 @@ const makeShopeeAPIClient = Effect.gen(function* () {
 
     getProductList: (
       shopId: number,
-      params: {
+      params?: {
         offset?: number;
         pageSize?: number;
         itemStatus?: string;
-      } = {},
+      },
     ) => {
       const apiPath = "/api/v2/product/get_item_list";
 
+      const {
+        offset = "0",
+        pageSize = "10",
+        itemStatus = "NORMAL",
+      } = params ?? {};
+
       const additionalParams: Record<string, string> = {
-        offset: params.offset?.toString() ?? "0",
-        page_size: params.pageSize?.toString() ?? "10",
-        item_status: params.itemStatus ?? "NORMAL",
+        offset: offset.toString(),
+        page_size: pageSize.toString(),
+        item_status: itemStatus,
       };
 
       return Effect.gen(function* () {
@@ -184,6 +201,32 @@ const makeShopeeAPIClient = Effect.gen(function* () {
         return yield* HttpClientResponse.schemaBodyJson(GetProductListResponse)(
           response,
         );
+      }).pipe(Effect.scoped);
+    },
+
+    getProductDetail: (shopId: number, params: { itemIds: number[] }) => {
+      const apiPath = "/api/v2/product/get_item_base_info";
+
+      const additionalParams: Record<string, string> = {
+        item_id_list: params.itemIds.join(","),
+      };
+
+      return Effect.gen(function* () {
+        const accessToken = yield* authClient.getValidAccessToken(shopId);
+
+        const client = prepareRequest(
+          apiPath,
+          shopId,
+          accessToken,
+          additionalParams,
+        );
+
+        const req = HttpClientRequest.get(apiPath);
+        const response = yield* client.execute(req);
+
+        return yield* HttpClientResponse.schemaBodyJson(
+          GetProductDetailResponse,
+        )(response);
       }).pipe(Effect.scoped);
     },
   };
