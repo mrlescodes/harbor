@@ -15,6 +15,10 @@
     "./config": {
       "types": "./dist/config.d.ts",
       "default": "./src/config.ts"
+    },
+    "./token-storage": {
+      "types": "./dist/token-storage.d.ts",
+      "default": "./src/token-storage.ts"
     }
   },
   "license": "MIT",

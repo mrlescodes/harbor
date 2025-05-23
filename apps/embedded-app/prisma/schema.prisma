@@ -14,16 +14,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// TODO: Add relationship
 model Store {
   id       String  @id @default(auto()) @map("_id") @db.ObjectId
   shop     String  @unique
   isActive Boolean @default(true)
-
-  shopeeShopId         Int?
-  shopeeAccessToken    String?
-  shopeeRefreshToken   String?
-  shopeeConnected      Boolean?  @default(false)
-  shopeeTokenExpiresAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -38,6 +33,19 @@ model Session {
   scope       String?
   expires     DateTime?
   accessToken String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// TODO: Add relationship
+model ShopeeConnection {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  shopeeShopId   Int      @unique
+  accessToken    String
+  refreshToken   String
+  connected      Boolean  @default(true)
+  tokenExpiresAt DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

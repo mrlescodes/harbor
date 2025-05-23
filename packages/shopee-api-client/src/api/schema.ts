@@ -57,3 +57,41 @@ export const GetOrderDetailResponse = Schema.Struct({
   }),
   warning: Schema.String,
 });
+
+/**
+ * Order List Response
+ *
+ * @see https://open.shopee.com/documents/v2/v2.order.get_order_list?module=94&type=1
+ */
+export const GetOrderListResponse = Schema.Struct({
+  error: Schema.String,
+  message: Schema.String,
+  response: Schema.Struct({
+    more: Schema.Boolean,
+    next_cursor: Schema.String,
+    order_list: Schema.Array(
+      Schema.Struct({
+        order_sn: Schema.String,
+      }),
+    ),
+  }),
+  request_id: Schema.String,
+});
+
+/**
+ * Product List Response
+ *
+ * @see https://open.shopee.com/documents/v2/v2.product.get_item_list?module=89&type=1
+ */
+export const GetProductListResponse = Schema.Struct({
+  error: Schema.String,
+  message: Schema.String,
+  warning: Schema.String,
+  request_id: Schema.String,
+  response: Schema.Struct({
+    item: Schema.Array(Schema.Any), // TODO: { item_id: 1919431, item_status: 'NORMAL', update_time: 1745300200 }
+    total_count: Schema.Int,
+    has_next_page: Schema.Boolean,
+    next: Schema.String,
+  }),
+});
