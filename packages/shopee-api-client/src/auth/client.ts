@@ -1,3 +1,5 @@
+// TODO: https://claude.ai/chat/c64f103a-1d7b-4d32-8d71-51deeb083594
+
 import {
   FetchHttpClient,
   HttpClient,
@@ -54,12 +56,9 @@ const makeShopeeAuthClient = Effect.gen(function* () {
     getAuthUrl: (redirectUrl: string) => {
       const apiPath = "/api/v2/shop/auth_partner";
       const searchParams = prepareSearchParams(apiPath);
-
-      // Add the redirect parameter
       searchParams.append("redirect", redirectUrl);
 
       const url = new URL(`${apiBaseUrl}${apiPath}`);
-
       searchParams.forEach((value, key) => {
         url.searchParams.append(key, value);
       });
