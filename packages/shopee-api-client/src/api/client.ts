@@ -14,8 +14,7 @@ const makeShopeeAPIClient = Effect.gen(function* () {
   const config = yield* ShopeeAPIConfig;
   const defaultClient = yield* HttpClient.HttpClient;
 
-  const { apiBaseUrl, partnerId, partnerKey, accessToken, shopId } =
-    yield* config.getConfig;
+  const { apiBaseUrl, partnerId, partnerKey } = yield* config.getConfig;
 
   const baseClient = defaultClient.pipe(
     HttpClient.mapRequest(HttpClientRequest.prependUrl(apiBaseUrl)),
@@ -26,6 +25,10 @@ const makeShopeeAPIClient = Effect.gen(function* () {
     additionalParams: Record<string, string> = {},
   ) => {
     const timestamp = getCurrentTimestamp();
+
+    // TODO: Read from storage
+    const accessToken = "123";
+    const shopId = "123";
 
     const baseString = `${partnerId}${apiPath}${timestamp}${accessToken}${shopId}`;
     const signature = generateSignature(partnerKey, baseString);
