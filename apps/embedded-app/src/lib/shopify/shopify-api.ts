@@ -1,11 +1,12 @@
 import "@shopify/shopify-api/adapters/node";
+
 import {
-  shopifyApi,
   LATEST_API_VERSION,
   LogSeverity,
+  shopifyApi,
 } from "@shopify/shopify-api";
 
-import { env } from "@/env";
+import { env } from "~/env";
 
 export const shopify = shopifyApi({
   apiKey: env.NEXT_PUBLIC_SHOPIFY_API_KEY,

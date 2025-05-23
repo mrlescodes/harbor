@@ -1,9 +1,9 @@
 import { Effect, Layer } from "effect";
 
-import { createShopeeAPIConfigLayer } from "@workspace/shopee-api-client/config";
-import { ShopeeAuthClient } from "@workspace/shopee-api-client/auth";
+import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
+import { createShopeeAPIConfigLayer } from "@harbor/shopee-api-client/config";
 
-import { env } from "@/env";
+import { env } from "~/env";
 
 const ShopeeAPIConfigLayerLive = createShopeeAPIConfigLayer({
   partnerId: env.SHOPEE_PARTNER_ID,

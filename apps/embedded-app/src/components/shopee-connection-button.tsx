@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Button } from "@shopify/polaris";
 
-import { useAppBridge } from "@/components/app-bridge";
-import { getShopeeAuthUrl } from "@/lib/shopee/actions";
+import { useAppBridge } from "~/components/app-bridge";
+import { getShopeeAuthUrl } from "~/lib/shopee/actions";
 
 export const ShopeeConnectionButton = () => {
   const app = useAppBridge();

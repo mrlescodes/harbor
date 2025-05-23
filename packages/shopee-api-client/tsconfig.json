@@ -1,16 +1,5 @@
 {
-  "extends": "@repo/typescript-config/base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
-    "declarationDir": "./dist"
-  },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "extends": "@harbor/tsconfig/internal-package.json",
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

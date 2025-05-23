@@ -2,7 +2,7 @@
 
 import { Card, Page } from "@shopify/polaris";
 
-import { ShopeeConnectionButton } from "@/components/shopee-connection-button";
+import { ShopeeConnectionButton } from "~/components/shopee-connection-button";
 
 export default function Home() {
   return (

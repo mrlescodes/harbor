@@ -23,7 +23,7 @@ export const handleInitialLoad = async ({
       const store = await databaseService.findStore(shop);
 
       // If the store does not exist it's a first install. If it exists but is not active it's a re-install
-      if (!store || !store.isActive) {
+      if (!store?.isActive) {
         await databaseService.initialiseStore(shop);
       }
     }

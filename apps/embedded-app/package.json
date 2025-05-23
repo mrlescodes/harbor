@@ -5,41 +5,47 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "deploy": "pnpm run generate-config && shopify app deploy",
+    "clean": "git clean -xdf .cache .next .turbo node_modules",
     "dev": "next dev --turbopack",
-    "generate-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts",
-    "lint": "next lint",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "deploy-app-config": "pnpm run generate-app-config && shopify app deploy",
+    "generate-app-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts",
     "prisma:generate": "dotenvx run -f .env.local -- pnpm prisma generate",
-    "prisma:push": "dotenvx run -f .env.local -- pnpm prisma db push",
-    "start": "next start"
+    "prisma:push": "dotenvx run -f .env.local -- pnpm prisma db push"
   },
   "dependencies": {
+    "@harbor/shopee-api-client": "workspace:*",
     "@prisma/client": "^6.6.0",
     "@shopify/polaris": "^13.9.5",
     "@shopify/shopify-api": "^11.12.0",
-    "@t3-oss/env-nextjs": "^0.12.0",
-    "@workspace/shopee-api-client": "workspace:*",
+    "@t3-oss/env-nextjs": "^0.13.4",
     "effect": "^3.14.13",
-    "next": "15.3.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "zod": "^3.24.2"
+    "next": "^15.3.1",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.40.0",
-    "@eslint/eslintrc": "^3.3.1",
+    "@harbor/eslint-config": "workspace:*",
+    "@harbor/prettier-config": "workspace:*",
+    "@harbor/tailwind-config": "workspace:*",
+    "@harbor/tsconfig": "workspace:*",
     "@iarna/toml": "^2.2.5",
     "@shopify/app-bridge-types": "^0.0.18",
-    "@tailwindcss/postcss": "^4.1.4",
-    "@types/node": "^20.17.30",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "eslint": "^9.24.0",
-    "eslint-config-next": "15.3.0",
+    "@types/node": "catalog:node22",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "eslint": "catalog:",
     "jiti": "^1.21.7",
+    "prettier": "catalog:",
     "prisma": "^6.6.0",
-    "tailwindcss": "^4.1.4",
+    "tailwindcss": "catalog:",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.3"
-  }
+    "typescript": "catalog:"
+  },
+  "prettier": "@harbor/prettier-config"
 }

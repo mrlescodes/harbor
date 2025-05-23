@@ -1,13 +1,13 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
-import { handleInitialLoad } from "@/lib/shopify/actions";
+import { handleInitialLoad } from "~/lib/shopify/actions";
 
-type SessionProviderProps = {
+interface SessionProviderProps {
   children: React.ReactNode;
-};
+}
 
 function SessionHandler() {
   const searchParams = useSearchParams();
@@ -16,7 +16,8 @@ function SessionHandler() {
     const shop = searchParams.get("shop");
     const idToken = searchParams.get("id_token");
 
-    handleInitialLoad({ shop, idToken });
+    // TODO: Review this fix?
+    void handleInitialLoad({ shop, idToken });
   }, [searchParams]);
 
   return null;

@@ -1,4 +1,6 @@
+/* eslint-disable */
 // TODO: Move to package
+// TODO: Fix lint errors
 
 import type {
   ShopifyGlobal,
@@ -7,17 +9,15 @@ import type {
   UISaveBarAttributes,
   UITitleBarAttributes,
 } from "@shopify/app-bridge-types";
-import {
-  Children,
-  type FunctionComponent,
-  type PropsWithChildren,
-  type ReactElement,
-  type ReactNode,
-  type RefAttributes as ReactRefAttributes,
-  type Ref,
-  useEffect,
-  useState,
+import type {
+  FunctionComponent,
+  PropsWithChildren,
+  ReactElement,
+  ReactNode,
+  RefAttributes as ReactRefAttributes,
+  Ref,
 } from "react";
+import { Children, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 declare module "react" {

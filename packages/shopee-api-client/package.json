@@ -1,34 +1,43 @@
 {
-  "name": "@workspace/shopee-api-client",
-  "version": "0.0.0",
+  "name": "@harbor/shopee-api-client",
+  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "exports": {
     "./api": {
-      "types": "./src/api/index.ts",
-      "default": "./dist/api/index.js"
+      "types": "./dist/api/index.d.ts",
+      "default": "./src/api/index.ts"
     },
     "./auth": {
-      "types": "./src/auth/index.ts",
-      "default": "./dist/auth/index.js"
+      "types": "./dist/auth/index.d.ts",
+      "default": "./src/auth/index.ts"
     },
     "./config": {
-      "types": "./src/config.ts",
-      "default": "./dist/config.js"
+      "types": "./dist/config.d.ts",
+      "default": "./src/config.ts"
     }
   },
-  "module": "true",
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist",
-    "dev": "tsc -w"
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@effect/platform": "^0.80.13",
     "effect": "^3.14.13"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.14.1",
-    "typescript": "^5.8.3"
-  }
+    "@harbor/eslint-config": "workspace:*",
+    "@harbor/prettier-config": "workspace:*",
+    "@harbor/tsconfig": "workspace:*",
+    "@types/node": "catalog:node22",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@harbor/prettier-config"
 }
