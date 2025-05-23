@@ -1,4 +1,5 @@
 // TODO: Notes this is the prefered service implementation shape
+// TODO: Logging service
 
 import { Effect, Layer } from "effect";
 
@@ -25,8 +26,8 @@ export const createShopeeTokenStorage = (prisma: PrismaClient) => {
     ) => {
       return Effect.gen(function* () {
         yield* Effect.tryPromise({
-          try: () =>
-            prisma.shopeeConnection.upsert({
+          try: () => {
+            return prisma.shopeeConnection.upsert({
               where: { shopeeShopId: shopId },
               update: {
                 accessToken: tokens.accessToken,
@@ -39,8 +40,12 @@ export const createShopeeTokenStorage = (prisma: PrismaClient) => {
                 refreshToken: tokens.refreshToken,
                 tokenExpiresAt: calculateExpiryDate(tokens.expiresIn),
               },
-            }),
-          catch: (_) => new Error(`Failed to store token`),
+            });
+          },
+          catch: (error) => {
+            console.log(error);
+            return new Error(`Failed to store token`);
+          },
         });
       });
     },
@@ -48,11 +53,15 @@ export const createShopeeTokenStorage = (prisma: PrismaClient) => {
     getToken: (shopId: number) => {
       return Effect.gen(function* () {
         const connection = yield* Effect.tryPromise({
-          try: () =>
-            prisma.shopeeConnection.findUnique({
+          try: () => {
+            return prisma.shopeeConnection.findUnique({
               where: { shopeeShopId: shopId },
-            }),
-          catch: (_) => new Error(`Failed to get token`),
+            });
+          },
+          catch: (error) => {
+            console.log(error);
+            return new Error(`Failed to get token`);
+          },
         });
 
         if (!connection) {
@@ -72,12 +81,16 @@ export const createShopeeTokenStorage = (prisma: PrismaClient) => {
     clearToken: (shopId: number) => {
       return Effect.gen(function* () {
         yield* Effect.tryPromise({
-          try: () =>
-            prisma.shopeeConnection.update({
+          try: () => {
+            return prisma.shopeeConnection.update({
               where: { shopeeShopId: shopId },
               data: { connected: false },
-            }),
-          catch: (_) => new Error(`Failed to clear token`),
+            });
+          },
+          catch: (error) => {
+            console.log(error);
+            return new Error(`Failed to clear token`);
+          },
         });
       });
     },

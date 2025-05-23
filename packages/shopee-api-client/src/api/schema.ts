@@ -1,5 +1,7 @@
 import { Schema } from "effect";
 
+// TODO: Align names with shopee api docs and review responses
+
 // TODO: List all supported currency codes
 export enum CurrencyCode {
   "IDR",
@@ -93,5 +95,20 @@ export const GetProductListResponse = Schema.Struct({
     total_count: Schema.Int,
     has_next_page: Schema.Boolean,
     next: Schema.String,
+  }),
+});
+
+/**
+ * Product Detail Response
+ *
+ * @see https://open.shopee.com/documents/v2/v2.product.get_item_base_info?module=89&type=1
+ */
+export const GetProductDetailResponse = Schema.Struct({
+  error: Schema.String,
+  message: Schema.String,
+  warning: Schema.String,
+  request_id: Schema.String,
+  response: Schema.Struct({
+    item_list: Schema.Array(Schema.Any), // TODO: { item_id: 1919431, item_status: 'NORMAL', update_time: 1745300200 }
   }),
 });
