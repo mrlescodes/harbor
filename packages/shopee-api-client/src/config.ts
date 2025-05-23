@@ -4,8 +4,6 @@ export interface ShopeeAPIConfigParams {
   readonly apiBaseUrl: string;
   readonly partnerId: number;
   readonly partnerKey: string;
-  readonly accessToken: string;
-  readonly shopId: number;
 }
 
 export class ShopeeAPIConfig extends Context.Tag("ShopeeAPIConfig")<

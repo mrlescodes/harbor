@@ -89,6 +89,13 @@ const makeShopeeAuthClient = Effect.gen(function* () {
 
         const response = yield* client.execute(req);
 
+        // TODO: Error path
+        // raw response {
+        //   error: 'error_auth',
+        //   message: 'Invalid code',
+        //   request_id: 'e3e3e7f335c430e774f7c9cc61e99601'
+        // }
+
         const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
           GetAccessTokenResponse,
         )(response);
