@@ -7,12 +7,15 @@ import {
 import { Context, Effect, Layer } from "effect";
 
 import { ShopeeAPIConfig } from "../config";
+import { ShopeeTokenStorage } from "../token-storage";
 import { generateSignature, getCurrentTimestamp } from "../utils";
 import { GetAccessTokenResponse, RefreshAccessTokenResponse } from "./schema";
 
 const makeShopeeAuthClient = Effect.gen(function* () {
-  const config = yield* ShopeeAPIConfig;
   const defaultClient = yield* HttpClient.HttpClient;
+
+  const config = yield* ShopeeAPIConfig;
+  const tokenStorage = yield* ShopeeTokenStorage;
 
   const { apiBaseUrl, partnerId, partnerKey } = yield* config.getConfig;
 
@@ -86,10 +89,18 @@ const makeShopeeAuthClient = Effect.gen(function* () {
 
         const response = yield* client.execute(req);
 
+        const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
+          GetAccessTokenResponse,
+        )(response);
+
+        yield* tokenStorage.storeToken(shopId, {
+          accessToken: tokenResponse.access_token,
+          refreshToken: tokenResponse.refresh_token,
+          expiresIn: tokenResponse.expire_in,
+        });
+
         // TODO: Handle invalid code response explicitly
-        return yield* HttpClientResponse.schemaBodyJson(GetAccessTokenResponse)(
-          response,
-        );
+        return tokenResponse;
       }).pipe(Effect.scoped);
     },
 
@@ -115,10 +126,18 @@ const makeShopeeAuthClient = Effect.gen(function* () {
 
         const response = yield* client.execute(req);
 
-        // TODO: Handle invalid refresh token response explicitly
-        return yield* HttpClientResponse.schemaBodyJson(
+        const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
           RefreshAccessTokenResponse,
         )(response);
+
+        yield* tokenStorage.storeToken(shopId, {
+          accessToken: tokenResponse.access_token,
+          refreshToken: tokenResponse.refresh_token,
+          expiresIn: tokenResponse.expire_in,
+        });
+
+        // TODO: Handle invalid refresh token response explicitly
+        return tokenResponse;
       }).pipe(Effect.scoped);
     },
   };
