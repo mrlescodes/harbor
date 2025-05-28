@@ -1,26 +1,9 @@
 {
-  "name": "@harbor/shopee-api-client",
+  "name": "@harbor/shopify-api-client",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "exports": {
-    "./api": {
-      "types": "./dist/api/index.d.ts",
-      "default": "./src/api/index.ts"
-    },
-    "./auth": {
-      "types": "./dist/auth/index.d.ts",
-      "default": "./src/auth/index.ts"
-    },
-    "./config": {
-      "types": "./dist/config.d.ts",
-      "default": "./src/config.ts"
-    },
-    "./token-storage": {
-      "types": "./dist/token-storage.d.ts",
-      "default": "./src/token-storage.ts"
-    }
-  },
+  "exports": {},
   "license": "MIT",
   "scripts": {
     "build": "tsc",
@@ -31,14 +14,13 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@effect/platform": "^0.80.13",
+    "@shopify/shopify-api": "^11.12.0",
     "effect": "catalog:"
   },
   "devDependencies": {
     "@harbor/eslint-config": "workspace:*",
     "@harbor/prettier-config": "workspace:*",
     "@harbor/tsconfig": "workspace:*",
-    "@types/node": "catalog:node22",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

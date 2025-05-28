@@ -18,9 +18,10 @@
   },
   "dependencies": {
     "@harbor/shopee-api-client": "workspace:*",
+    "@harbor/shopify-api-client": "workspace:*",
     "@prisma/client": "^6.6.0",
+    "@shopify/cli": "^3.80.7",
     "@shopify/polaris": "^13.9.5",
-    "@shopify/shopify-api": "^11.12.0",
     "@t3-oss/env-nextjs": "^0.13.4",
     "effect": "^3.14.13",
     "next": "^15.3.1",
