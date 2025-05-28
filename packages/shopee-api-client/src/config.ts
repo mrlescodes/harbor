@@ -1,9 +1,9 @@
 import { Context, Effect, Layer } from "effect";
 
 export interface ShopeeAPIConfigParams {
-  readonly apiBaseUrl: string;
-  readonly partnerId: number;
-  readonly partnerKey: string;
+  apiBaseUrl: string;
+  partnerId: number;
+  partnerKey: string;
 }
 
 export class ShopeeAPIConfig extends Context.Tag("ShopeeAPIConfig")<
