@@ -1,3 +1,5 @@
+// TODO: Create main applive?
+
 import { Effect, Layer } from "effect";
 
 import { ShopeeAPIClient } from "@harbor/shopee-api-client/api";

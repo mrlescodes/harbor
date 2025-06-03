@@ -17,36 +17,34 @@ const calculateExpiryDate = (expiresIn?: number): Date => {
   return expiresAt;
 };
 
-// TODO: Encrypt / Decrupt access token
-export const createShopeeTokenStorage = (prisma: PrismaClient) => {
+// TODO: Encrypt / Decrupt access token and move to package?
+const make = (prisma: PrismaClient) => {
   return ShopeeTokenStorage.of({
     storeToken: (
       shopId: number,
       tokens: { accessToken: string; refreshToken: string; expiresIn?: number },
     ) => {
-      return Effect.gen(function* () {
-        yield* Effect.tryPromise({
-          try: () => {
-            return prisma.shopeeConnection.upsert({
-              where: { shopeeShopId: shopId },
-              update: {
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-                tokenExpiresAt: calculateExpiryDate(tokens.expiresIn),
-              },
-              create: {
-                shopeeShopId: shopId,
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-                tokenExpiresAt: calculateExpiryDate(tokens.expiresIn),
-              },
-            });
-          },
-          catch: (error) => {
-            console.log(error);
-            return new Error(`Failed to store token`);
-          },
-        });
+      return Effect.tryPromise({
+        try: () => {
+          return prisma.shopeeConnection.upsert({
+            where: { shopeeShopId: shopId },
+            update: {
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              tokenExpiresAt: calculateExpiryDate(tokens.expiresIn),
+            },
+            create: {
+              shopeeShopId: shopId,
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              tokenExpiresAt: calculateExpiryDate(tokens.expiresIn),
+            },
+          });
+        },
+        catch: (error) => {
+          console.log(error);
+          return new Error(`Failed to store token`);
+        },
       });
     },
 
@@ -79,19 +77,17 @@ export const createShopeeTokenStorage = (prisma: PrismaClient) => {
     },
 
     clearToken: (shopId: number) => {
-      return Effect.gen(function* () {
-        yield* Effect.tryPromise({
-          try: () => {
-            return prisma.shopeeConnection.update({
-              where: { shopeeShopId: shopId },
-              data: { connected: false },
-            });
-          },
-          catch: (error) => {
-            console.log(error);
-            return new Error(`Failed to clear token`);
-          },
-        });
+      return Effect.tryPromise({
+        try: () => {
+          return prisma.shopeeConnection.update({
+            where: { shopeeShopId: shopId },
+            data: { connected: false },
+          });
+        },
+        catch: (error) => {
+          console.log(error);
+          return new Error(`Failed to clear token`);
+        },
       });
     },
   });
@@ -99,5 +95,5 @@ export const createShopeeTokenStorage = (prisma: PrismaClient) => {
 
 export const ShopeeTokenStorageLive = Layer.succeed(
   ShopeeTokenStorage,
-  createShopeeTokenStorage(prisma),
+  make(prisma),
 );

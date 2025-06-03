@@ -16,7 +16,7 @@ import {
   GetProductListResponse,
 } from "./schema";
 
-const makeShopeeAPIClient = Effect.gen(function* () {
+const make = Effect.gen(function* () {
   const config = yield* ShopeeAPIConfig;
   const authClient = yield* ShopeeAuthClient;
   const defaultClient = yield* HttpClient.HttpClient;
@@ -234,10 +234,9 @@ const makeShopeeAPIClient = Effect.gen(function* () {
 
 export class ShopeeAPIClient extends Context.Tag("ShopeeAPIClient")<
   ShopeeAPIClient,
-  Effect.Effect.Success<typeof makeShopeeAPIClient>
+  Effect.Effect.Success<typeof make>
 >() {
-  static readonly Live = Layer.effect(
-    ShopeeAPIClient,
-    makeShopeeAPIClient,
-  ).pipe(Layer.provide(FetchHttpClient.layer));
+  static readonly Live = Layer.effect(ShopeeAPIClient, make).pipe(
+    Layer.provide(FetchHttpClient.layer),
+  );
 }
