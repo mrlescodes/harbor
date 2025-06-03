@@ -14,7 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// TODO: Add relationship
+// TODO: Add relationships
 model Store {
   id       String  @id @default(auto()) @map("_id") @db.ObjectId
   shop     String  @unique
@@ -24,6 +24,7 @@ model Store {
   updatedAt DateTime @updatedAt
 }
 
+// TODO: Remove
 model Session {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   sessionId   String    @unique
@@ -38,7 +39,16 @@ model Session {
   updatedAt DateTime @updatedAt
 }
 
-// TODO: Add relationship
+model ShopifySession {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId String @unique
+  shop      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// TODO: Add relationships
 model ShopeeConnection {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   shopeeShopId   Int      @unique

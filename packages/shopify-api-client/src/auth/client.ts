@@ -73,6 +73,6 @@ const make = Effect.gen(function* () {
 export class ShopifyAuthClient extends Context.Tag("ShopifyAuthClient")<
   ShopifyAuthClient,
   Effect.Effect.Success<typeof make>
->() {}
-
-export const ShopifyAuthClientLive = Layer.effect(ShopifyAuthClient, make);
+>() {
+  static readonly Live = Layer.effect(ShopifyAuthClient, make);
+}
