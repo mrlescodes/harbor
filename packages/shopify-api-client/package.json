@@ -7,6 +7,10 @@
     "./config": {
       "types": "./dist/config.d.ts",
       "default": "./src/config.ts"
+    },
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "default": "./src/auth/index.ts"
     }
   },
   "license": "MIT",
