@@ -4,9 +4,11 @@ import { RequestedTokenType, shopifyApi } from "@shopify/shopify-api";
 import { Context, Effect, Layer } from "effect";
 
 import { ShopifyAPIConfig } from "../config";
+import { ShopifySessionStorage } from "../session-storage";
 
 const make = Effect.gen(function* () {
   const config = yield* ShopifyAPIConfig;
+  const sessionStorage = yield* ShopifySessionStorage;
 
   const {
     apiKey,
@@ -38,21 +40,28 @@ const make = Effect.gen(function* () {
     sessionToken: string;
     online?: boolean;
   }) => {
-    return Effect.tryPromise({
-      try: () => {
-        return shopify.auth.tokenExchange({
-          shop,
-          sessionToken,
-          requestedTokenType: online
-            ? RequestedTokenType.OnlineAccessToken
-            : RequestedTokenType.OfflineAccessToken,
-        });
-      },
-      catch: (error) => {
-        console.error("Token exchange failed", error);
+    // TODO: Effect.scoped?
+    return Effect.gen(function* () {
+      const { session } = yield* Effect.tryPromise({
+        try: () => {
+          return shopify.auth.tokenExchange({
+            shop,
+            sessionToken,
+            requestedTokenType: online
+              ? RequestedTokenType.OnlineAccessToken
+              : RequestedTokenType.OfflineAccessToken,
+          });
+        },
+        catch: (error) => {
+          console.error("Token exchange failed", error);
+          return new Error("Token exchange failed");
+        },
+      });
 
-        return new Error("Token exchange failed");
-      },
+      yield* sessionStorage.storeSession({
+        sessionId: session.id,
+        shop: session.shop,
+      });
     });
   };
 

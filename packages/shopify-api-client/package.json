@@ -11,6 +11,10 @@
     "./auth": {
       "types": "./dist/auth/index.d.ts",
       "default": "./src/auth/index.ts"
+    },
+    "./session-storage": {
+      "types": "./dist/session-storage.d.ts",
+      "default": "./src/session-storage.ts"
     }
   },
   "license": "MIT",
