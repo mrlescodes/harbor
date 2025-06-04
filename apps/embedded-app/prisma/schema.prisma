@@ -4,6 +4,8 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// TODO: Add indexes
+
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -24,13 +26,13 @@ model Store {
   updatedAt DateTime @updatedAt
 }
 
-// TODO: Remove
-model Session {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  sessionId   String    @unique
-  shop        String
-  state       String
-  isOnline    Boolean   @default(false)
+model ShopifySession {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId String  @unique
+  shop      String
+  state     String
+  isOnline  Boolean @default(false)
+
   scope       String?
   expires     DateTime?
   accessToken String?
@@ -39,16 +41,6 @@ model Session {
   updatedAt DateTime @updatedAt
 }
 
-model ShopifySession {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  sessionId String @unique
-  shop      String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// TODO: Add relationships
 model ShopeeConnection {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   shopeeShopId   Int      @unique

@@ -1,6 +1,7 @@
 import { LATEST_API_VERSION } from "@shopify/shopify-api";
 import { Effect, Layer } from "effect";
 
+import { ShopifyAPIClient } from "@harbor/shopify-api-client/api";
 import { ShopifyAuthClient } from "@harbor/shopify-api-client/auth";
 import { createShopifyAPIConfigLayer } from "@harbor/shopify-api-client/config";
 
@@ -33,3 +34,16 @@ const ShopifyAuthClientLive = ShopifyAuthClient.Live.pipe(
 export const runWithShopifyAuthClient = <A, E>(
   effect: Effect.Effect<A, E, ShopifyAuthClient>,
 ) => Effect.provide(effect, ShopifyAuthClientLive);
+
+/**
+ * Api Client
+ */
+
+const ShopifyAPIClientLive = ShopifyAPIClient.Live.pipe(
+  Layer.provide(ShopifyAPIConfigLayerLive),
+  Layer.provide(ShopifyAuthClientLive),
+);
+
+export const runWithShopifyAPIClient = <A, E>(
+  effect: Effect.Effect<A, E, ShopifyAPIClient>,
+) => Effect.provide(effect, ShopifyAPIClientLive);
