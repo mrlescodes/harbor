@@ -1,4 +1,4 @@
-// TODO: Review code style and roll out
+import "@shopify/shopify-api/adapters/node";
 
 import { RequestedTokenType, shopifyApi } from "@shopify/shopify-api";
 import { Context, Effect, Layer } from "effect";
@@ -40,7 +40,6 @@ const make = Effect.gen(function* () {
     sessionToken: string;
     online?: boolean;
   }) => {
-    // TODO: Effect.scoped?
     return Effect.gen(function* () {
       const { session } = yield* Effect.tryPromise({
         try: () => {
@@ -58,15 +57,33 @@ const make = Effect.gen(function* () {
         },
       });
 
-      yield* sessionStorage.storeSession({
-        sessionId: session.id,
-        shop: session.shop,
-      });
-    });
+      yield* sessionStorage.storeSession(session);
+    }).pipe(Effect.scoped);
+  };
+
+  const getValidSession = (sessionId: string) => {
+    return Effect.gen(function* () {
+      const session = yield* sessionStorage.loadSession(sessionId);
+
+      if (!session) {
+        return yield* Effect.fail(new Error("No session found for shop"));
+      }
+
+      if (session.expires && session.expires < new Date()) {
+        return yield* Effect.fail(new Error("Session expired for shop"));
+      }
+
+      if (!session.accessToken) {
+        return yield* Effect.fail(new Error("No access token found for shop"));
+      }
+
+      return session;
+    }).pipe(Effect.scoped);
   };
 
   return {
     exchangeToken,
+    getValidSession,
   };
 });
 
