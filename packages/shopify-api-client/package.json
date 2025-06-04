@@ -8,13 +8,17 @@
       "types": "./dist/config.d.ts",
       "default": "./src/config.ts"
     },
+    "./session-storage": {
+      "types": "./dist/session-storage.d.ts",
+      "default": "./src/session-storage.ts"
+    },
     "./auth": {
       "types": "./dist/auth/index.d.ts",
       "default": "./src/auth/index.ts"
     },
-    "./session-storage": {
-      "types": "./dist/session-storage.d.ts",
-      "default": "./src/session-storage.ts"
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "default": "./src/api/index.ts"
     }
   },
   "license": "MIT",

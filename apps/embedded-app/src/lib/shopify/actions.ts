@@ -18,7 +18,7 @@ export const handleInitialLoad = async ({
     const program = Effect.gen(function* () {
       const authClient = yield* ShopifyAuthClient;
 
-      authClient.exchangeToken({ shop, sessionToken: idToken });
+      yield* authClient.exchangeToken({ shop, sessionToken: idToken });
     });
 
     const runnable = runWithShopifyAuthClient(program);
