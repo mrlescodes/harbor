@@ -14,7 +14,8 @@
     "deploy-app-config": "pnpm run generate-app-config && shopify app deploy",
     "generate-app-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts",
     "prisma:generate": "dotenvx run -f .env.local -- pnpm prisma generate",
-    "prisma:push": "dotenvx run -f .env.local -- pnpm prisma db push"
+    "prisma:push": "dotenvx run -f .env.local -- pnpm prisma db push",
+    "postinstall": "prisma generate --no-engine"
   },
   "dependencies": {
     "@harbor/shopee-api-client": "workspace:*",

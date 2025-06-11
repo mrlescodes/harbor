@@ -18,7 +18,7 @@ out/
 next-env.d.ts
 
 # Prisma
-**/generated/prisma
+**/generated/prisma/
 
 # Shopify dev files and generated TOML files
 .shopify
