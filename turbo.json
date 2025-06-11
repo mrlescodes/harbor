@@ -57,5 +57,14 @@
       "cache": false,
       "interactive": true
     }
-  }
+  },
+  "globalEnv": [
+    "DATABASE_URL",
+    "DATABASE_ENCRYPTION_KEY",
+    "SHOPIFY_API_SECRET",
+    "SHOPIFY_ACCESS_SCOPES",
+    "SHOPEE_PARTNER_ID",
+    "SHOPEE_PARTNER_KEY",
+    "SHOPEE_API_BASE_URL"
+  ]
 }
