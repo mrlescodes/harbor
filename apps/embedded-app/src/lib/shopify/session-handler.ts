@@ -1,6 +1,7 @@
 import type { Session as ShopifySession } from "@shopify/shopify-api";
 
-import { prisma } from "~/lib/database/prisma";
+import { prisma } from "@harbor/database";
+
 import { encrypt } from "~/utils/crypto";
 
 /**
@@ -12,7 +13,7 @@ const storeSession = async (session: ShopifySession) => {
       ? encrypt(session.accessToken)
       : null;
 
-    await prisma.session.upsert({
+    await prisma.shopifySession.upsert({
       where: { sessionId: session.id },
       update: {
         shop: session.shop,
