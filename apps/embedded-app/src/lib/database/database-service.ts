@@ -1,6 +1,6 @@
-import { prisma } from "../database/prisma";
+import { prisma } from "@harbor/database";
 
-// TODO: Change to domain repository when it grows?
+// TODO: Change to domain package
 
 const initialiseStore = async (shop: string) => {
   return prisma.store.upsert({

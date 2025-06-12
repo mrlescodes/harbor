@@ -1,14 +1,14 @@
+import { Effect, Layer } from "effect";
+
+import type { PrismaClient } from "@harbor/database";
+import { prisma } from "@harbor/database";
+import { ShopeeTokenStorage } from "@harbor/shopee-api-client/token-storage";
+
 // TODO: Notes this is the prefered service implementation shape
 // TODO: Logging service
 
-import { Effect, Layer } from "effect";
-
-import { ShopeeTokenStorage } from "@harbor/shopee-api-client/token-storage";
-
-import type { PrismaClient } from "~/generated/prisma";
-import { prisma } from "../database/prisma";
-
 /**
+ * TODO: Move to utils package
  * Helper function to calculate token expiration date
  */
 const calculateExpiryDate = (expiresIn?: number): Date => {

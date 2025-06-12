@@ -12,15 +12,12 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "deploy-app-config": "pnpm run generate-app-config && shopify app deploy",
-    "generate-app-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts",
-    "prisma:generate": "dotenvx run -f .env.local -- pnpm prisma generate",
-    "prisma:push": "dotenvx run -f .env.local -- pnpm prisma db push",
-    "postinstall": "prisma generate --no-engine"
+    "generate-app-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts"
   },
   "dependencies": {
+    "@harbor/database": "workspace:*",
     "@harbor/shopee-api-client": "workspace:*",
     "@harbor/shopify-api-client": "workspace:*",
-    "@prisma/client": "^6.6.0",
     "@shopify/cli": "^3.80.7",
     "@shopify/polaris": "^13.9.5",
     "@t3-oss/env-nextjs": "^0.13.4",
@@ -44,7 +41,6 @@
     "eslint": "catalog:",
     "jiti": "^1.21.7",
     "prettier": "catalog:",
-    "prisma": "^6.6.0",
     "tailwindcss": "catalog:",
     "tsx": "^4.19.3",
     "typescript": "catalog:"

@@ -1,10 +1,9 @@
 import { Session } from "@shopify/shopify-api";
 import { Effect, Layer } from "effect";
 
+import type { PrismaClient } from "@harbor/database";
+import { prisma } from "@harbor/database";
 import { ShopifySessionStorage } from "@harbor/shopify-api-client/session-storage";
-
-import type { PrismaClient } from "~/generated/prisma";
-import { prisma } from "../database/prisma";
 
 const make = (prisma: PrismaClient) => {
   // TODO: Encrypt tokens
