@@ -152,6 +152,9 @@ importers:
       '@prisma/client':
         specifier: ^6.9.0
         version: 6.9.0(prisma@6.9.0(typescript@5.8.3))(typescript@5.8.3)
+      effect:
+        specifier: 'catalog:'
+        version: 3.16.5
     devDependencies:
       '@harbor/eslint-config':
         specifier: workspace:*
@@ -183,6 +186,9 @@ importers:
       '@effect/platform':
         specifier: ^0.80.13
         version: 0.80.21(effect@3.16.5)
+      '@harbor/database':
+        specifier: workspace:*
+        version: link:../database
       effect:
         specifier: 'catalog:'
         version: 3.16.5
