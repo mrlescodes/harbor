@@ -5,9 +5,9 @@ import { Effect, Layer } from "effect";
 import { ShopeeAPIClient } from "@harbor/shopee-api-client/api";
 import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
 import { createShopeeAPIConfigLayer } from "@harbor/shopee-api-client/config";
+import { ShopeeTokenStorage } from "@harbor/shopee-api-client/token-storage";
 
 import { env } from "~/env";
-import { ShopeeTokenStorageLive } from "./token-storage";
 
 /**
  * Config Layer
@@ -25,7 +25,7 @@ const ShopeeAPIConfigLayerLive = createShopeeAPIConfigLayer({
 
 const ShopeeAuthClientLive = ShopeeAuthClient.Live.pipe(
   Layer.provide(ShopeeAPIConfigLayerLive),
-  Layer.provide(ShopeeTokenStorageLive),
+  Layer.provide(ShopeeTokenStorage.Live),
 );
 
 export const runWithShopeeAuthClient = <A, E>(

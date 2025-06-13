@@ -1,36 +1,99 @@
-import type { Effect } from "effect";
-import { Context } from "effect";
+import { Context, Effect, Layer } from "effect";
 
-export interface ShopeeAuthToken {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: Date;
-}
+import { PrismaClient } from "@harbor/database";
 
-// TODO: Check required shape
-export class ShopeeTokenStorage extends Context.Tag("ShopeeTokenStorage")<
-  ShopeeTokenStorage,
-  {
-    /**
-     * Store tokens for a specific Shopee shop ID
-     */
+/**
+ * TODO: Move to utils package
+ * Helper function to calculate token expiration date
+ */
+const calculateExpiryDate = (expiresIn?: number): Date => {
+  const expiresAt = new Date();
+  expiresAt.setSeconds(expiresAt.getSeconds() + (expiresIn ?? 3600));
+  return expiresAt;
+};
+
+const make = Effect.gen(function* () {
+  const prisma = yield* PrismaClient;
+
+  return {
     storeToken: (
       shopId: number,
-      tokens: {
-        accessToken: string;
-        refreshToken: string;
-        expiresIn?: number;
-      },
-    ) => Effect.Effect<void, Error>;
+      tokens: { accessToken: string; refreshToken: string; expiresIn?: number },
+    ) => {
+      return Effect.tryPromise({
+        try: () => {
+          return prisma.shopeeConnection.upsert({
+            where: { shopeeShopId: shopId },
+            update: {
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              tokenExpiresAt: calculateExpiryDate(tokens.expiresIn),
+            },
+            create: {
+              shopeeShopId: shopId,
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              tokenExpiresAt: calculateExpiryDate(tokens.expiresIn),
+            },
+          });
+        },
+        catch: (error) => {
+          console.log(error);
+          return new Error(`Failed to store token`);
+        },
+      });
+    },
 
-    /**
-     * Get tokens for a specific Shopee shop ID
-     */
-    getToken: (shopId: number) => Effect.Effect<ShopeeAuthToken, Error>;
+    getToken: (shopId: number) => {
+      return Effect.gen(function* () {
+        const connection = yield* Effect.tryPromise({
+          try: () => {
+            return prisma.shopeeConnection.findUnique({
+              where: { shopeeShopId: shopId },
+            });
+          },
+          catch: (error) => {
+            console.log(error);
+            return new Error(`Failed to get token`);
+          },
+        });
 
-    /**
-     * Clear tokens for a specific Shopee shop ID
-     */
-    clearToken: (shopId: number) => Effect.Effect<void, Error>;
-  }
->() {}
+        if (!connection) {
+          return yield* Effect.fail(
+            new Error(`No token found for Shopee shop ID: ${shopId}`),
+          );
+        }
+
+        return {
+          accessToken: connection.accessToken,
+          refreshToken: connection.refreshToken,
+          expiresAt: connection.tokenExpiresAt,
+        };
+      });
+    },
+
+    clearToken: (shopId: number) => {
+      return Effect.tryPromise({
+        try: () => {
+          return prisma.shopeeConnection.update({
+            where: { shopeeShopId: shopId },
+            data: { connected: false },
+          });
+        },
+        catch: (error) => {
+          console.log(error);
+          return new Error(`Failed to clear token`);
+        },
+      });
+    },
+  };
+});
+
+export class ShopeeTokenStorage extends Context.Tag("ShopTokenStorage")<
+  ShopeeTokenStorage,
+  Effect.Effect.Success<typeof make>
+>() {
+  static readonly Live = Layer.effect(ShopeeTokenStorage, make).pipe(
+    Layer.provide(PrismaClient.Live),
+  );
+}
