@@ -4,9 +4,9 @@ import { Effect, Layer } from "effect";
 import { ShopifyAPIClient } from "@harbor/shopify-api-client/api";
 import { ShopifyAuthClient } from "@harbor/shopify-api-client/auth";
 import { createShopifyAPIConfigLayer } from "@harbor/shopify-api-client/config";
+import { ShopifySessionStorage } from "@harbor/shopify-api-client/session-storage";
 
 import { env } from "~/env";
-import { ShopifySessionStorageLive } from "./session-storage";
 
 /**
  * Config Layer
@@ -28,7 +28,7 @@ const ShopifyAPIConfigLayerLive = createShopifyAPIConfigLayer({
 
 const ShopifyAuthClientLive = ShopifyAuthClient.Live.pipe(
   Layer.provide(ShopifyAPIConfigLayerLive),
-  Layer.provide(ShopifySessionStorageLive),
+  Layer.provide(ShopifySessionStorage.Live),
 );
 
 export const runWithShopifyAuthClient = <A, E>(

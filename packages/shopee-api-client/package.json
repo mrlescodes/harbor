@@ -31,8 +31,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@harbor/database": "workspace:*",
     "@effect/platform": "^0.80.13",
+    "@harbor/database": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {
