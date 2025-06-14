@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@harbor/database": "workspace:*",
-    "@harbor/shopify-api-client": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {
