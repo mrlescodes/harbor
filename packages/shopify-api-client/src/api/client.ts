@@ -63,7 +63,7 @@ const make = Effect.gen(function* () {
     isEmbeddedApp,
   } = yield* config.getConfig;
 
-  // TODO: Extract and share?
+  // TODO: Extract and share across clients
   const shopify = shopifyApi({
     apiKey,
     apiSecretKey,

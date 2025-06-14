@@ -20,7 +20,7 @@ const make = Effect.gen(function* () {
     isEmbeddedApp,
   } = yield* config.getConfig;
 
-  // TODO: Extract and share?
+  // TODO: Extract and share across clients
   const shopify = shopifyApi({
     apiKey,
     apiSecretKey,
@@ -61,8 +61,9 @@ const make = Effect.gen(function* () {
     }).pipe(Effect.scoped);
   };
 
-  const getValidSession = (sessionId: string) => {
+  const getValidSession = (shop: string) => {
     return Effect.gen(function* () {
+      const sessionId = shopify.session.getOfflineId(shop);
       const session = yield* sessionStorage.loadSession(sessionId);
 
       if (!session) {
