@@ -1,0 +1,32 @@
+{
+  "name": "@harbor/shopee-integration",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@harbor/database": "workspace:*",
+    "@harbor/shopify-api-client": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@harbor/eslint-config": "workspace:*",
+    "@harbor/prettier-config": "workspace:*",
+    "@harbor/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@harbor/prettier-config"
+}
