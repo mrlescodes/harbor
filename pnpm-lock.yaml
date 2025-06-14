@@ -70,6 +70,9 @@ importers:
       '@harbor/shopee-api-client':
         specifier: workspace:*
         version: link:../../packages/shopee-api-client
+      '@harbor/shopee-integration':
+        specifier: workspace:*
+        version: link:../../packages/shopee-integration
       '@harbor/shopify-api-client':
         specifier: workspace:*
         version: link:../../packages/shopify-api-client
@@ -205,6 +208,37 @@ importers:
       '@types/node':
         specifier: catalog:node22
         version: 22.15.31
+      eslint:
+        specifier: 'catalog:'
+        version: 9.28.0(jiti@2.4.2)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.5.3
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  packages/shopee-integration:
+    dependencies:
+      '@harbor/database':
+        specifier: workspace:*
+        version: link:../database
+      '@harbor/shopify-api-client':
+        specifier: workspace:*
+        version: link:../shopify-api-client
+      effect:
+        specifier: 'catalog:'
+        version: 3.16.5
+    devDependencies:
+      '@harbor/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@harbor/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier
+      '@harbor/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
       eslint:
         specifier: 'catalog:'
         version: 9.28.0(jiti@2.4.2)

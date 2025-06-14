@@ -1,5 +1,3 @@
-// TODO: https://claude.ai/chat/c64f103a-1d7b-4d32-8d71-51deeb083594
-
 import {
   FetchHttpClient,
   HttpClient,
@@ -13,22 +11,7 @@ import { ShopeeTokenStorage } from "../token-storage";
 import { generateSignature, getCurrentTimestamp } from "../utils";
 import { GetAccessTokenResponse, RefreshAccessTokenResponse } from "./schema";
 
-// Token-related errors
-export class TokenExpiredError extends Error {
-  readonly _tag = "TokenExpiredError";
-  constructor(public readonly shopId: number) {
-    super(`Token expired for shop ID: ${shopId}`);
-  }
-}
-
-export class TokenNotFoundError extends Error {
-  readonly _tag = "TokenNotFoundError";
-  constructor(public readonly shopId: number) {
-    super(`Token not found for shop ID: ${shopId}`);
-  }
-}
-
-const makeShopeeAuthClient = Effect.gen(function* () {
+const make = Effect.gen(function* () {
   const defaultClient = yield* HttpClient.HttpClient;
   const config = yield* ShopeeAPIConfig;
   const tokenStorage = yield* ShopeeTokenStorage;
@@ -180,7 +163,7 @@ const makeShopeeAuthClient = Effect.gen(function* () {
         const token = yield* tokenStorage.getToken(shopId);
 
         // If token is not expired, return it
-        if (!isTokenExpired(token)) {
+        if (token && !isTokenExpired(token)) {
           return token.accessToken;
         }
 
@@ -190,20 +173,14 @@ const makeShopeeAuthClient = Effect.gen(function* () {
         const refreshedToken = yield* tokenStorage.getToken(shopId);
         return refreshedToken.accessToken;
       }),
-
-    /**
-     * Clear tokens for a shop (useful for logout/revoke)
-     */
-    clearTokens: (shopId: number) => tokenStorage.clearToken(shopId),
   };
 });
 
 export class ShopeeAuthClient extends Context.Tag("ShopeeAuthClient")<
   ShopeeAuthClient,
-  Effect.Effect.Success<typeof makeShopeeAuthClient>
+  Effect.Effect.Success<typeof make>
 >() {
-  static readonly Live = Layer.effect(
-    ShopeeAuthClient,
-    makeShopeeAuthClient,
-  ).pipe(Layer.provide(FetchHttpClient.layer));
+  static readonly Live = Layer.effect(ShopeeAuthClient, make).pipe(
+    Layer.provide(FetchHttpClient.layer),
+  );
 }
