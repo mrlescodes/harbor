@@ -9,7 +9,7 @@ const make = Effect.gen(function* () {
 
   const storeToken = (
     shopId: number,
-    tokens: { accessToken: string; refreshToken: string; expiresIn?: number },
+    tokens: { accessToken: string; refreshToken: string; expiresIn: number },
   ) => {
     return Effect.tryPromise({
       try: () => {
@@ -29,8 +29,10 @@ const make = Effect.gen(function* () {
         });
       },
       catch: (error) => {
-        console.log(error);
-        return new Error(`Failed to store token`);
+        console.error("Database error storing Shopee API credentials:", error);
+        return new Error(
+          `Failed to store Shopee API credentials for shop ID ${shopId}`,
+        );
       },
     });
   };
@@ -44,14 +46,19 @@ const make = Effect.gen(function* () {
           });
         },
         catch: (error) => {
-          console.log(error);
-          return new Error(`Failed to get token`);
+          console.error(
+            "Database error retrieving Shopee API credentials:",
+            error,
+          );
+          return new Error(
+            `Failed to retrieve Shopee API credentials for shop ID ${shopId}`,
+          );
         },
       });
 
       if (!connection) {
         return yield* Effect.fail(
-          new Error(`No token found for Shopee shop ID: ${shopId}`),
+          new Error(`No Shopee API credentials found for shop ID ${shopId}`),
         );
       }
 
