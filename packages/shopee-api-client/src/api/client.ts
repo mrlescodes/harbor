@@ -10,7 +10,7 @@ import { Context, Effect, Layer } from "effect";
 import { ShopeeAuthClient } from "../auth";
 import { ShopeeAPIConfig } from "../config";
 import { generateSignature, getCurrentTimestamp } from "../utils";
-import { GetOrderListResponse } from "./schema";
+import { GetOrderDetailResponse, GetOrderListResponse } from "./schema";
 
 const make = Effect.gen(function* () {
   const defaultClient = yield* HttpClient.HttpClient;
@@ -118,8 +118,40 @@ const make = Effect.gen(function* () {
     }).pipe(Effect.scoped);
   };
 
+  /**
+   * @see https://open.shopee.com/documents/v2/v2.order.get_order_detail?module=94&type=1
+   */
+  const getOrderDetail = (
+    shopId: number,
+    params: { orderNumbers: string[] },
+  ) => {
+    const apiPath = "/api/v2/order/get_order_detail";
+
+    const additionalParams = {
+      order_sn_list: params.orderNumbers.join(","),
+    };
+
+    return Effect.gen(function* () {
+      const accessToken = yield* authClient.getValidAccessToken(shopId);
+
+      const client = prepareRequest(
+        apiPath,
+        shopId,
+        accessToken,
+        additionalParams,
+      );
+      const req = HttpClientRequest.get(apiPath);
+      const response = yield* client.execute(req);
+
+      return yield* HttpClientResponse.schemaBodyJson(GetOrderDetailResponse)(
+        response,
+      );
+    }).pipe(Effect.scoped);
+  };
+
   return {
     getOrderList,
+    getOrderDetail,
   };
 });
 
