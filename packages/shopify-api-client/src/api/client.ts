@@ -5,49 +5,7 @@ import { Context, Effect, Layer } from "effect";
 
 import { ShopifyAuthClient } from "../auth";
 import { ShopifyAPIConfig } from "../config";
-
-const CREATE_ORDER = /* GraphQL */ `
-  mutation orderCreate(
-    $order: OrderCreateOrderInput!
-    $options: OrderCreateOptionsInput
-  ) {
-    orderCreate(order: $order, options: $options) {
-      userErrors {
-        field
-        message
-      }
-      order {
-        id
-        totalTaxSet {
-          shopMoney {
-            amount
-            currencyCode
-          }
-        }
-        lineItems(first: 5) {
-          nodes {
-            variant {
-              id
-            }
-            id
-            title
-            quantity
-            taxLines {
-              title
-              rate
-              priceSet {
-                shopMoney {
-                  amount
-                  currencyCode
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+import { CREATE_ORDER } from "./queries";
 
 const make = Effect.gen(function* () {
   const config = yield* ShopifyAPIConfig;
@@ -78,25 +36,19 @@ const make = Effect.gen(function* () {
     return Effect.gen(function* () {
       const session = yield* authClient.getValidSession(shop);
 
-      const client = new shopify.clients.Graphql({
+      return new shopify.clients.Graphql({
         session,
       });
-
-      return { client, shop, session };
     });
   };
 
-  const executeGraphQL = <T>(
-    shop: string,
-    query: string,
-    variables?: Record<string, unknown>,
-  ) => {
+  const createOrder = (shop: string, order: Record<string, unknown>) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
 
       const response = yield* Effect.tryPromise({
         try: () => {
-          return client.request(query, { variables });
+          return client.request(CREATE_ORDER, { variables: order });
         },
         catch: (error) => {
           console.error(error);
@@ -104,15 +56,12 @@ const make = Effect.gen(function* () {
         },
       });
 
-      return response as T;
+      return response;
     });
   };
 
   return {
-    // TODO: Response type
-    createOrder: (shop: string, orderInput: Record<string, unknown>) => {
-      return executeGraphQL(shop, CREATE_ORDER, orderInput);
-    },
+    createOrder,
   };
 });
 
