@@ -1,13 +1,19 @@
 import { Schema } from "effect";
 
+/**
+ * @see https://open.shopee.com/developer-guide/229
+ */
 export enum OrderStatus {
-  "UNPAID",
-  "READY_TO_SHIP",
-  "PROCESSED",
-  "SHIPPED",
-  "COMPLETED",
-  "IN_CANCEL",
-  "CANCELLED",
+  UNPAID = "UNPAID",
+  READY_TO_SHIP = "READY_TO_SHIP",
+  RETRY_SHIP = "RETRY_SHIP",
+  IN_CANCEL = "IN_CANCEL",
+  CANCELLED = "CANCELLED",
+  PROCESSED = "PROCESSED",
+  SHIPPED = "SHIPPED",
+  TO_RETURN = "TO_RETURN",
+  TO_CONFIRM_RECEIVE = "TO_CONFIRM_RECEIVE",
+  COMPLETED = "COMPLETED",
 }
 
 export enum CurrencyCode {

@@ -4,7 +4,7 @@ import {
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
-import { subDays } from "date-fns";
+import { getUnixTime, subDays } from "date-fns";
 import { Context, Effect, Layer } from "effect";
 
 import { ShopeeAuthClient } from "../auth";
@@ -84,7 +84,7 @@ const make = Effect.gen(function* () {
     const apiPath = "/api/v2/order/get_order_list";
 
     const now = getCurrentTimestamp();
-    const fifteenDaysAgo = subDays(now, 15);
+    const fifteenDaysAgo = getUnixTime(subDays(new Date(), 15));
 
     const {
       timeRangeField = "create_time",
@@ -98,6 +98,7 @@ const make = Effect.gen(function* () {
       time_from: timeFrom.toString(),
       time_to: timeTo.toString(),
       page_size: pageSize.toString(),
+      response_optional_fields: "order_status",
     };
 
     return Effect.gen(function* () {
