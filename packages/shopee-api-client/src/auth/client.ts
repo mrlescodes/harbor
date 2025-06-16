@@ -51,40 +51,6 @@ const make = Effect.gen(function* () {
     );
   };
 
-  // Internal refresh logic
-  const performTokenRefresh = (refreshToken: string, shopId: number) => {
-    const apiPath = "/api/v2/auth/access_token/get";
-
-    return Effect.gen(function* () {
-      const client = prepareRequest(apiPath);
-
-      const req = yield* HttpClientRequest.post(apiPath).pipe(
-        HttpClientRequest.setHeaders({
-          "Content-Type": "application/json",
-        }),
-        HttpClientRequest.bodyJson({
-          shop_id: shopId,
-          partner_id: partnerId,
-          refresh_token: refreshToken,
-        }),
-      );
-
-      const response = yield* client.execute(req);
-
-      const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
-        RefreshAccessTokenResponse,
-      )(response);
-
-      yield* tokenStorage.storeToken(shopId, {
-        accessToken: tokenResponse.access_token,
-        refreshToken: tokenResponse.refresh_token,
-        expiresIn: tokenResponse.expire_in,
-      });
-
-      return tokenResponse;
-    }).pipe(Effect.scoped);
-  };
-
   /**
    * @see https://open.shopee.com/developer-guide/20
    */
@@ -141,7 +107,36 @@ const make = Effect.gen(function* () {
    * @see https://open.shopee.com/documents/v2/v2.public.refresh_access_token?module=104&type=1
    */
   const refreshAccessToken = (refreshToken: string, shopId: number) => {
-    return performTokenRefresh(refreshToken, shopId);
+    const apiPath = "/api/v2/auth/access_token/get";
+
+    return Effect.gen(function* () {
+      const client = prepareRequest(apiPath);
+
+      const req = yield* HttpClientRequest.post(apiPath).pipe(
+        HttpClientRequest.setHeaders({
+          "Content-Type": "application/json",
+        }),
+        HttpClientRequest.bodyJson({
+          shop_id: shopId,
+          partner_id: partnerId,
+          refresh_token: refreshToken,
+        }),
+      );
+
+      const response = yield* client.execute(req);
+
+      const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
+        RefreshAccessTokenResponse,
+      )(response);
+
+      yield* tokenStorage.storeToken(shopId, {
+        accessToken: tokenResponse.access_token,
+        refreshToken: tokenResponse.refresh_token,
+        expiresIn: tokenResponse.expire_in,
+      });
+
+      return tokenResponse;
+    }).pipe(Effect.scoped);
   };
 
   /**
@@ -156,7 +151,7 @@ const make = Effect.gen(function* () {
         return token.accessToken;
       }
 
-      const refreshedTokenResponse = yield* performTokenRefresh(
+      const refreshedTokenResponse = yield* refreshAccessToken(
         token.refreshToken,
         shopId,
       );
