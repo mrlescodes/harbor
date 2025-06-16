@@ -8,9 +8,16 @@ import { Context, Effect, Layer } from "effect";
 
 import { ShopeeAPIConfig } from "../config";
 import { ShopeeTokenStorage } from "../token-storage";
-import { generateSignature, getCurrentTimestamp } from "../utils";
+import {
+  generateSignature,
+  getCurrentTimestamp,
+  isTokenExpired,
+} from "../utils";
 import { GetAccessTokenResponse, RefreshAccessTokenResponse } from "./schema";
 
+/**
+ * @see https://open.shopee.com/developer-guide/20
+ */
 const make = Effect.gen(function* () {
   const defaultClient = yield* HttpClient.HttpClient;
   const config = yield* ShopeeAPIConfig;
@@ -42,13 +49,6 @@ const make = Effect.gen(function* () {
         request.pipe(HttpClientRequest.appendUrlParams(searchParams)),
       ),
     );
-  };
-
-  // Helper to check if token is expired (with 5-minute buffer)
-  const isTokenExpired = (token: { expiresAt: Date }): boolean => {
-    const now = new Date();
-    const bufferTime = 5 * 60 * 1000; // 5 minutes in milliseconds
-    return token.expiresAt.getTime() - bufferTime <= now.getTime();
   };
 
   // Internal refresh logic
@@ -124,13 +124,6 @@ const make = Effect.gen(function* () {
 
         const response = yield* client.execute(req);
 
-        // TODO: Error path
-        // raw response {
-        //   error: 'error_auth',
-        //   message: 'Invalid code',
-        //   request_id: 'e3e3e7f335c430e774f7c9cc61e99601'
-        // }
-
         const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
           GetAccessTokenResponse,
         )(response);
@@ -141,7 +134,6 @@ const make = Effect.gen(function* () {
           expiresIn: tokenResponse.expire_in,
         });
 
-        // TODO: Handle invalid code response explicitly
         return tokenResponse;
       }).pipe(Effect.scoped);
     },
@@ -157,22 +149,22 @@ const make = Effect.gen(function* () {
      * Get a valid access token for the shop, automatically refreshing if needed
      * This is the main method API clients should use
      */
-    getValidAccessToken: (shopId: number) =>
-      Effect.gen(function* () {
-        // Try to get existing token
+    getValidAccessToken: (shopId: number) => {
+      return Effect.gen(function* () {
         const token = yield* tokenStorage.getToken(shopId);
 
-        // If token is not expired, return it
-        if (token && !isTokenExpired(token)) {
+        if (token.expiresAt && !isTokenExpired(token.expiresAt)) {
           return token.accessToken;
         }
 
-        yield* performTokenRefresh(token.refreshToken, shopId);
+        const refreshedTokenResponse = yield* performTokenRefresh(
+          token.refreshToken,
+          shopId,
+        );
 
-        // Get the refreshed token
-        const refreshedToken = yield* tokenStorage.getToken(shopId);
-        return refreshedToken.accessToken;
-      }),
+        return refreshedTokenResponse.access_token;
+      });
+    },
   };
 });
 
