@@ -70,6 +70,7 @@ const make = Effect.gen(function* () {
         return yield* Effect.fail(new Error("No session found for shop"));
       }
 
+      // TODO: Use is expired from shared utils pacakge
       if (session.expires && session.expires < new Date()) {
         return yield* Effect.fail(new Error("Session expired for shop"));
       }
