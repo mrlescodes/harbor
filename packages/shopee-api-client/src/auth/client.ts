@@ -8,9 +8,16 @@ import { Context, Effect, Layer } from "effect";
 
 import { ShopeeAPIConfig } from "../config";
 import { ShopeeTokenStorage } from "../token-storage";
-import { generateSignature, getCurrentTimestamp } from "../utils";
+import {
+  generateSignature,
+  getCurrentTimestamp,
+  isTokenExpired,
+} from "../utils";
 import { GetAccessTokenResponse, RefreshAccessTokenResponse } from "./schema";
 
+/**
+ * @see https://open.shopee.com/developer-guide/20
+ */
 const make = Effect.gen(function* () {
   const defaultClient = yield* HttpClient.HttpClient;
   const config = yield* ShopeeAPIConfig;
@@ -44,15 +51,62 @@ const make = Effect.gen(function* () {
     );
   };
 
-  // Helper to check if token is expired (with 5-minute buffer)
-  const isTokenExpired = (token: { expiresAt: Date }): boolean => {
-    const now = new Date();
-    const bufferTime = 5 * 60 * 1000; // 5 minutes in milliseconds
-    return token.expiresAt.getTime() - bufferTime <= now.getTime();
+  /**
+   * @see https://open.shopee.com/developer-guide/20
+   */
+  const getAuthUrl = (redirectUrl: string) => {
+    const apiPath = "/api/v2/shop/auth_partner";
+    const searchParams = prepareSearchParams(apiPath);
+    searchParams.append("redirect", redirectUrl);
+
+    const url = new URL(`${apiBaseUrl}${apiPath}`);
+    searchParams.forEach((value, key) => {
+      url.searchParams.append(key, value);
+    });
+
+    return url.toString();
   };
 
-  // Internal refresh logic
-  const performTokenRefresh = (refreshToken: string, shopId: number) => {
+  /**
+   * @see https://open.shopee.com/documents/v2/v2.public.get_access_token?module=104&type=1
+   */
+  const getAccessToken = (code: string, shopId: number) => {
+    const apiPath = "/api/v2/auth/token/get";
+
+    return Effect.gen(function* () {
+      const client = prepareRequest(apiPath);
+
+      const req = yield* HttpClientRequest.post(apiPath).pipe(
+        HttpClientRequest.setHeaders({
+          "Content-Type": "application/json",
+        }),
+        HttpClientRequest.bodyJson({
+          shop_id: shopId,
+          partner_id: partnerId,
+          code,
+        }),
+      );
+
+      const response = yield* client.execute(req);
+
+      const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
+        GetAccessTokenResponse,
+      )(response);
+
+      yield* tokenStorage.storeToken(shopId, {
+        accessToken: tokenResponse.access_token,
+        refreshToken: tokenResponse.refresh_token,
+        expiresIn: tokenResponse.expire_in,
+      });
+
+      return tokenResponse;
+    }).pipe(Effect.scoped);
+  };
+
+  /**
+   * @see https://open.shopee.com/documents/v2/v2.public.refresh_access_token?module=104&type=1
+   */
+  const refreshAccessToken = (refreshToken: string, shopId: number) => {
     const apiPath = "/api/v2/auth/access_token/get";
 
     return Effect.gen(function* () {
@@ -85,94 +139,32 @@ const make = Effect.gen(function* () {
     }).pipe(Effect.scoped);
   };
 
+  /**
+   * Get a valid access token for the shop, automatically refreshing if needed
+   * This is the main method API clients should use
+   */
+  const getValidAccessToken = (shopId: number) => {
+    return Effect.gen(function* () {
+      const token = yield* tokenStorage.getToken(shopId);
+
+      if (token.expiresAt && !isTokenExpired(token.expiresAt)) {
+        return token.accessToken;
+      }
+
+      const refreshedTokenResponse = yield* refreshAccessToken(
+        token.refreshToken,
+        shopId,
+      );
+
+      return refreshedTokenResponse.access_token;
+    });
+  };
+
   return {
-    /**
-     * @see https://open.shopee.com/developer-guide/20
-     */
-    getAuthUrl: (redirectUrl: string) => {
-      const apiPath = "/api/v2/shop/auth_partner";
-      const searchParams = prepareSearchParams(apiPath);
-      searchParams.append("redirect", redirectUrl);
-
-      const url = new URL(`${apiBaseUrl}${apiPath}`);
-      searchParams.forEach((value, key) => {
-        url.searchParams.append(key, value);
-      });
-
-      return url.toString();
-    },
-
-    /**
-     * @see https://open.shopee.com/documents/v2/v2.public.get_access_token?module=104&type=1
-     */
-    getAccessToken: (code: string, shopId: number) => {
-      const apiPath = "/api/v2/auth/token/get";
-
-      return Effect.gen(function* () {
-        const client = prepareRequest(apiPath);
-
-        const req = yield* HttpClientRequest.post(apiPath).pipe(
-          HttpClientRequest.setHeaders({
-            "Content-Type": "application/json",
-          }),
-          HttpClientRequest.bodyJson({
-            shop_id: shopId,
-            partner_id: partnerId,
-            code,
-          }),
-        );
-
-        const response = yield* client.execute(req);
-
-        // TODO: Error path
-        // raw response {
-        //   error: 'error_auth',
-        //   message: 'Invalid code',
-        //   request_id: 'e3e3e7f335c430e774f7c9cc61e99601'
-        // }
-
-        const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
-          GetAccessTokenResponse,
-        )(response);
-
-        yield* tokenStorage.storeToken(shopId, {
-          accessToken: tokenResponse.access_token,
-          refreshToken: tokenResponse.refresh_token,
-          expiresIn: tokenResponse.expire_in,
-        });
-
-        // TODO: Handle invalid code response explicitly
-        return tokenResponse;
-      }).pipe(Effect.scoped);
-    },
-
-    /**
-     * @see https://open.shopee.com/documents/v2/v2.public.refresh_access_token?module=104&type=1
-     */
-    refreshAccessToken: (refreshToken: string, shopId: number) => {
-      return performTokenRefresh(refreshToken, shopId);
-    },
-
-    /**
-     * Get a valid access token for the shop, automatically refreshing if needed
-     * This is the main method API clients should use
-     */
-    getValidAccessToken: (shopId: number) =>
-      Effect.gen(function* () {
-        // Try to get existing token
-        const token = yield* tokenStorage.getToken(shopId);
-
-        // If token is not expired, return it
-        if (token && !isTokenExpired(token)) {
-          return token.accessToken;
-        }
-
-        yield* performTokenRefresh(token.refreshToken, shopId);
-
-        // Get the refreshed token
-        const refreshedToken = yield* tokenStorage.getToken(shopId);
-        return refreshedToken.accessToken;
-      }),
+    getAuthUrl,
+    getAccessToken,
+    refreshAccessToken,
+    getValidAccessToken,
   };
 });
 

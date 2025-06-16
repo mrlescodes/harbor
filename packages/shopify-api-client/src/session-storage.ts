@@ -17,7 +17,7 @@ const make = Effect.gen(function* () {
               state: session.state,
               isOnline: session.isOnline,
               scope: session.scope,
-              expires: session.expires,
+              expiresAt: session.expires,
               accessToken: session.accessToken,
             },
             create: {
@@ -26,7 +26,7 @@ const make = Effect.gen(function* () {
               state: session.state,
               isOnline: session.isOnline,
               scope: session.scope,
-              expires: session.expires,
+              expiresAt: session.expires,
               accessToken: session.accessToken,
             },
           });
@@ -62,7 +62,7 @@ const make = Effect.gen(function* () {
           state: sessionData.state,
           isOnline: sessionData.isOnline,
           scope: sessionData.scope ?? undefined,
-          expires: sessionData.expires ?? undefined,
+          expires: sessionData.expiresAt ?? undefined,
           accessToken: sessionData.accessToken ?? undefined,
         });
       });

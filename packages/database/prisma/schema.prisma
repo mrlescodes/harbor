@@ -25,7 +25,7 @@ model ShopifySession {
   state       String
   isOnline    Boolean
   scope       String?
-  expires     DateTime?
+  expiresAt   DateTime?
   accessToken String?
 
   createdAt DateTime @default(now())
@@ -38,7 +38,7 @@ model ShopeeApiCredentials {
   shopId       Int       @unique
   accessToken  String
   refreshToken String
-  expires      DateTime?
+  expiresAt    DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
