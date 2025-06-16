@@ -18,13 +18,13 @@ const make = Effect.gen(function* () {
           update: {
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
-            expires: calculateExpiryDate(tokens.expiresIn),
+            expiresAt: calculateExpiryDate(tokens.expiresIn),
           },
           create: {
             shopId,
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
-            expires: calculateExpiryDate(tokens.expiresIn),
+            expiresAt: calculateExpiryDate(tokens.expiresIn),
           },
         });
       },
@@ -65,7 +65,7 @@ const make = Effect.gen(function* () {
       return {
         accessToken: connection.accessToken,
         refreshToken: connection.refreshToken,
-        expires: connection.expires,
+        expiresAt: connection.expiresAt,
       };
     });
   };
