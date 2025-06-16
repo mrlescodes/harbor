@@ -23,7 +23,7 @@ const ShopeeAPIConfigLayerLive = createShopeeAPIConfigLayer({
  * Auth Client
  */
 
-const ShopeeAuthClientLive = ShopeeAuthClient.Live.pipe(
+export const ShopeeAuthClientLive = ShopeeAuthClient.Live.pipe(
   Layer.provide(ShopeeAPIConfigLayerLive),
   Layer.provide(ShopeeTokenStorage.Live),
 );
