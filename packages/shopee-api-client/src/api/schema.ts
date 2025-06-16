@@ -17,7 +17,7 @@ export enum OrderStatus {
 }
 
 export enum CurrencyCode {
-  "IDR",
+  IDR = "IDR",
 }
 
 export const GetOrderListResponse = Schema.Struct({
@@ -64,5 +64,5 @@ export const GetOrderDetailResponse = Schema.Struct({
       }),
     ),
   }),
-  warning: Schema.String,
+  warning: Schema.optional(Schema.String),
 });

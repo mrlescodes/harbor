@@ -93,12 +93,14 @@ const make = Effect.gen(function* () {
       pageSize = 100,
     } = params ?? {};
 
+    const responseOptionalFields = ["order_status"];
+
     const additionalParams: Record<string, string> = {
       time_range_field: timeRangeField,
       time_from: timeFrom.toString(),
       time_to: timeTo.toString(),
       page_size: pageSize.toString(),
-      response_optional_fields: "order_status",
+      response_optional_fields: responseOptionalFields.join(","),
     };
 
     return Effect.gen(function* () {
@@ -126,10 +128,20 @@ const make = Effect.gen(function* () {
     shopId: number,
     params: { orderNumbers: string[] },
   ) => {
+    // TODO: Restrict length of orderNumbers to < 50
+
     const apiPath = "/api/v2/order/get_order_detail";
+
+    const responseOptionalFields = [
+      "total_amount",
+      "buyer_user_id",
+      "buyer_username",
+      "item_list",
+    ];
 
     const additionalParams = {
       order_sn_list: params.orderNumbers.join(","),
+      response_optional_fields: responseOptionalFields.join(","),
     };
 
     return Effect.gen(function* () {
