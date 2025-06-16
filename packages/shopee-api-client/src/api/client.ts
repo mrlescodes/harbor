@@ -4,22 +4,18 @@ import {
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
+import { getUnixTime, subDays } from "date-fns";
 import { Context, Effect, Layer } from "effect";
 
 import { ShopeeAuthClient } from "../auth";
 import { ShopeeAPIConfig } from "../config";
 import { generateSignature, getCurrentTimestamp } from "../utils";
-import {
-  GetOrderDetailResponse,
-  GetOrderListResponse,
-  GetProductDetailResponse,
-  GetProductListResponse,
-} from "./schema";
+import { GetOrderDetailResponse, GetOrderListResponse } from "./schema";
 
 const make = Effect.gen(function* () {
+  const defaultClient = yield* HttpClient.HttpClient;
   const config = yield* ShopeeAPIConfig;
   const authClient = yield* ShopeeAuthClient;
-  const defaultClient = yield* HttpClient.HttpClient;
 
   const { apiBaseUrl, partnerId, partnerKey } = yield* config.getConfig;
 
@@ -71,164 +67,104 @@ const make = Effect.gen(function* () {
     );
   };
 
+  /**
+   * Get list of orders for a shop
+   *
+   * @see https://open.shopee.com/documents/v2/v2.order.get_order_list?module=94&type=1
+   */
+  const getOrderList = (
+    shopId: number,
+    params?: {
+      timeRangeField?: "create_time" | "update_time";
+      timeFrom?: number;
+      timeTo?: number;
+      pageSize?: number;
+    },
+  ) => {
+    const apiPath = "/api/v2/order/get_order_list";
+
+    const now = getCurrentTimestamp();
+    const fifteenDaysAgo = getUnixTime(subDays(new Date(), 15));
+
+    const {
+      timeRangeField = "create_time",
+      timeFrom = fifteenDaysAgo,
+      timeTo = now,
+      pageSize = 100,
+    } = params ?? {};
+
+    const responseOptionalFields = ["order_status"];
+
+    const additionalParams: Record<string, string> = {
+      time_range_field: timeRangeField,
+      time_from: timeFrom.toString(),
+      time_to: timeTo.toString(),
+      page_size: pageSize.toString(),
+      response_optional_fields: responseOptionalFields.join(","),
+    };
+
+    return Effect.gen(function* () {
+      const accessToken = yield* authClient.getValidAccessToken(shopId);
+
+      const client = prepareRequest(
+        apiPath,
+        shopId,
+        accessToken,
+        additionalParams,
+      );
+      const req = HttpClientRequest.get(apiPath);
+      const response = yield* client.execute(req);
+
+      return yield* HttpClientResponse.schemaBodyJson(GetOrderListResponse)(
+        response,
+      );
+    }).pipe(Effect.scoped);
+  };
+
+  /**
+   * @see https://open.shopee.com/documents/v2/v2.order.get_order_detail?module=94&type=1
+   */
+  const getOrderDetail = (
+    shopId: number,
+    params: { orderNumbers: string[] },
+  ) => {
+    // TODO: Restrict length of orderNumbers to < 50
+
+    const apiPath = "/api/v2/order/get_order_detail";
+
+    const responseOptionalFields = [
+      "total_amount",
+      "buyer_user_id",
+      "buyer_username",
+      "item_list",
+    ];
+
+    const additionalParams = {
+      order_sn_list: params.orderNumbers.join(","),
+      response_optional_fields: responseOptionalFields.join(","),
+    };
+
+    return Effect.gen(function* () {
+      const accessToken = yield* authClient.getValidAccessToken(shopId);
+
+      const client = prepareRequest(
+        apiPath,
+        shopId,
+        accessToken,
+        additionalParams,
+      );
+      const req = HttpClientRequest.get(apiPath);
+      const response = yield* client.execute(req);
+
+      return yield* HttpClientResponse.schemaBodyJson(GetOrderDetailResponse)(
+        response,
+      );
+    }).pipe(Effect.scoped);
+  };
+
   return {
-    /**
-     * @see https://open.shopee.com/documents/v2/v2.order.get_order_detail?module=94&type=1
-     */
-    getOrderDetail: (shopId: number, params: { orderNumbers: string[] }) => {
-      const apiPath = "/api/v2/order/get_order_detail";
-
-      const additionalParams = {
-        order_sn_list: params.orderNumbers.join(","),
-      };
-
-      return Effect.gen(function* () {
-        // Auth client handles token validation and refresh
-        const accessToken = yield* authClient.getValidAccessToken(shopId);
-
-        const client = prepareRequest(
-          apiPath,
-          shopId,
-          accessToken,
-          additionalParams,
-        );
-        const req = HttpClientRequest.get(apiPath);
-        const response = yield* client.execute(req);
-
-        return yield* HttpClientResponse.schemaBodyJson(GetOrderDetailResponse)(
-          response,
-        );
-      }).pipe(Effect.scoped);
-    },
-
-    /**
-     * Get list of orders for a shop
-     */
-    getOrderList: (
-      shopId: number,
-      params?: {
-        timeRangeField?: "create_time" | "update_time";
-        timeFrom?: number;
-        timeTo?: number;
-        pageSize?: number;
-        cursor?: string;
-        orderStatusList?: string[];
-      },
-    ) => {
-      const apiPath = "/api/v2/order/get_order_list";
-
-      const now = Math.floor(Date.now() / 1000);
-      const oneDayAgo = now - 86400;
-
-      const {
-        timeRangeField = "create_time",
-        timeFrom = oneDayAgo,
-        timeTo = now,
-        pageSize = 20,
-        cursor,
-        orderStatusList,
-      } = params ?? {};
-
-      const additionalParams: Record<string, string> = {
-        time_range_field: timeRangeField,
-        time_from: timeFrom.toString(),
-        time_to: timeTo.toString(),
-        page_size: pageSize.toString(),
-      };
-
-      if (cursor) {
-        additionalParams.cursor = cursor;
-      }
-
-      if (orderStatusList?.length) {
-        additionalParams.order_status = orderStatusList.join(",");
-      }
-
-      return Effect.gen(function* () {
-        const accessToken = yield* authClient.getValidAccessToken(shopId);
-
-        const client = prepareRequest(
-          apiPath,
-          shopId,
-          accessToken,
-          additionalParams,
-        );
-        const req = HttpClientRequest.get(apiPath);
-        const response = yield* client.execute(req);
-
-        return yield* HttpClientResponse.schemaBodyJson(GetOrderListResponse)(
-          response,
-        );
-      }).pipe(Effect.scoped);
-    },
-
-    getProductList: (
-      shopId: number,
-      params?: {
-        offset?: number;
-        pageSize?: number;
-        itemStatus?: string;
-      },
-    ) => {
-      const apiPath = "/api/v2/product/get_item_list";
-
-      const {
-        offset = "0",
-        pageSize = "10",
-        itemStatus = "NORMAL",
-      } = params ?? {};
-
-      const additionalParams: Record<string, string> = {
-        offset: offset.toString(),
-        page_size: pageSize.toString(),
-        item_status: itemStatus,
-      };
-
-      return Effect.gen(function* () {
-        // Auth client handles token validation and refresh
-        const accessToken = yield* authClient.getValidAccessToken(shopId);
-
-        const client = prepareRequest(
-          apiPath,
-          shopId,
-          accessToken,
-          additionalParams,
-        );
-
-        const req = HttpClientRequest.get(apiPath);
-        const response = yield* client.execute(req);
-
-        return yield* HttpClientResponse.schemaBodyJson(GetProductListResponse)(
-          response,
-        );
-      }).pipe(Effect.scoped);
-    },
-
-    getProductDetail: (shopId: number, params: { itemIds: number[] }) => {
-      const apiPath = "/api/v2/product/get_item_base_info";
-
-      const additionalParams: Record<string, string> = {
-        item_id_list: params.itemIds.join(","),
-      };
-
-      return Effect.gen(function* () {
-        const accessToken = yield* authClient.getValidAccessToken(shopId);
-
-        const client = prepareRequest(
-          apiPath,
-          shopId,
-          accessToken,
-          additionalParams,
-        );
-
-        const req = HttpClientRequest.get(apiPath);
-        const response = yield* client.execute(req);
-
-        return yield* HttpClientResponse.schemaBodyJson(
-          GetProductDetailResponse,
-        )(response);
-      }).pipe(Effect.scoped);
-    },
+    getOrderList,
+    getOrderDetail,
   };
 });
 
