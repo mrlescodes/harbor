@@ -4,7 +4,7 @@ import { Effect } from "effect";
 
 import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
 
-import { runWithShopeeAuthClient } from "~/lib/shopee/client";
+import { RuntimeServer } from "~/lib/runtime-server";
 
 export async function GET(
   request: NextRequest,
@@ -36,10 +36,7 @@ export async function GET(
     return yield* client.getAccessToken(code, parseInt(shopId, 10));
   });
 
-  const runnable = runWithShopeeAuthClient(program);
-
-  // TODO: Only handling happy path ATM 0.o
-  await Effect.runPromise(runnable);
+  await RuntimeServer.runPromise(program);
 
   // TODO: Use app id to allow for easy renaming of app?
   return NextResponse.redirect(
