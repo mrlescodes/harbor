@@ -5,7 +5,7 @@ import { Effect } from "effect";
 import { ShopifyAuthClient } from "@harbor/shopify-api-client/auth";
 
 import { databaseService } from "../database/database-service";
-import { runWithShopifyAuthClient } from "./client";
+import { RuntimeServer } from "../runtime-server";
 
 export const handleInitialLoad = async ({
   shop,
@@ -21,9 +21,7 @@ export const handleInitialLoad = async ({
       yield* authClient.exchangeToken({ shop, sessionToken: idToken });
     });
 
-    const runnable = runWithShopifyAuthClient(program);
-
-    await Effect.runPromise(runnable);
+    await RuntimeServer.runPromise(program);
 
     const store = await databaseService.findStore(shop);
 
