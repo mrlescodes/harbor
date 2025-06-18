@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@harbor/database": "workspace:*",
+    "@harbor/shopee-api-client": "workspace:^",
     "effect": "catalog:"
   },
   "devDependencies": {

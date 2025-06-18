@@ -223,6 +223,9 @@ importers:
       '@harbor/database':
         specifier: workspace:*
         version: link:../database
+      '@harbor/shopee-api-client':
+        specifier: workspace:^
+        version: link:../shopee-api-client
       effect:
         specifier: 'catalog:'
         version: 3.16.8
