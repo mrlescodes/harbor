@@ -36,6 +36,10 @@ export const GetOrderListResponse = Schema.Struct({
   }),
 });
 
+export type GetOrderListResponse = Schema.Schema.Type<
+  typeof GetOrderListResponse
+>;
+
 export const GetOrderDetailResponse = Schema.Struct({
   request_id: Schema.String,
   error: Schema.String,
@@ -66,3 +70,7 @@ export const GetOrderDetailResponse = Schema.Struct({
   }),
   warning: Schema.optional(Schema.String),
 });
+
+export type GetOrderDetailResponse = Schema.Schema.Type<
+  typeof GetOrderDetailResponse
+>;
