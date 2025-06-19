@@ -19,6 +19,7 @@
     "@harbor/shopee-api-client": "workspace:*",
     "@harbor/shopee-integration": "workspace:*",
     "@harbor/shopify-api-client": "workspace:*",
+    "@prisma/nextjs-monorepo-workaround-plugin": "^6.10.1",
     "@shopify/cli": "^3.80.7",
     "@shopify/polaris": "^13.9.5",
     "@t3-oss/env-nextjs": "^0.13.4",
