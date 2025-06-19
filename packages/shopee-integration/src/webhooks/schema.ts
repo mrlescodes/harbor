@@ -34,10 +34,21 @@ export type OrderStatusPush = Schema.Schema.Type<typeof OrderStatusPush>;
 export const isOrderStatusPush = Schema.is(OrderStatusPush);
 
 /**
+ * Generic Webhook
+ *
+ * @description For webhooks that are not implemented
+ */
+
+export const GenericWebhook = Schema.Struct({
+  ...WebhookBase.fields,
+  data: Schema.Unknown,
+});
+
+/**
  * Shopee Webhook
  */
 
-export const ShopeeWebhook = Schema.Union(OrderStatusPush);
+export const ShopeeWebhook = Schema.Union(OrderStatusPush, GenericWebhook);
 
 export type ShopeeWebhook = Schema.Schema.Type<typeof ShopeeWebhook>;
 
