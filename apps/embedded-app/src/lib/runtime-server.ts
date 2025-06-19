@@ -5,7 +5,7 @@ import { ShopeeAPIClient } from "@harbor/shopee-api-client/api";
 import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
 import { createShopeeAPIConfigLayer } from "@harbor/shopee-api-client/config";
 import { ShopeeTokenStorage } from "@harbor/shopee-api-client/token-storage";
-import { ShopeeIntegration } from "@harbor/shopee-integration";
+import { ShopeeIntegration } from "@harbor/shopee-integration/integration";
 import { ShopifyAPIClient } from "@harbor/shopify-api-client/api";
 import { ShopifyAuthClient } from "@harbor/shopify-api-client/auth";
 import { createShopifyAPIConfigLayer } from "@harbor/shopify-api-client/config";

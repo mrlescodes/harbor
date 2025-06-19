@@ -9,6 +9,10 @@ export const GetAccessTokenResponse = Schema.Struct({
   message: Schema.optional(Schema.String),
 });
 
+export type GetAccessTokenResponse = Schema.Schema.Type<
+  typeof GetAccessTokenResponse
+>;
+
 export const RefreshAccessTokenResponse = Schema.Struct({
   partner_id: Schema.Int,
   refresh_token: Schema.String,
@@ -19,3 +23,7 @@ export const RefreshAccessTokenResponse = Schema.Struct({
   message: Schema.optional(Schema.String),
   shop_id: Schema.Int,
 });
+
+export type RefreshAccessTokenResponse = Schema.Schema.Type<
+  typeof RefreshAccessTokenResponse
+>;

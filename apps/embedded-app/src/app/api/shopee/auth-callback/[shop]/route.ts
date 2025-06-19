@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { Effect } from "effect";
 
 import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
-import { ShopeeIntegration } from "@harbor/shopee-integration";
+import { ShopeeIntegration } from "@harbor/shopee-integration/integration";
 
 import { env } from "~/env";
 import { RuntimeServer } from "~/lib/runtime-server";
