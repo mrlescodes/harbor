@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model ShopifyStore {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  shop     String  @unique
+  isActive Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Currently only supporting offline access tokens.
+model ShopifySession {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId   String    @unique
+  shop        String
+  state       String
+  isOnline    Boolean
+  scope       String?
+  expiresAt   DateTime?
+  accessToken String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Currently only supporting shop account authorisation.
+model ShopeeApiCredentials {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  shopId       Int       @unique
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ShopeeConnection {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  shopeeShopId Int     @unique
+  shopifyShop  String  @unique
+  isConnected  Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

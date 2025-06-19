@@ -1,0 +1,50 @@
+{
+  "name": "embedded-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "clean": "git clean -xdf .cache .next .shopify .turbo node_modules",
+    "dev": "next dev --turbopack",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "deploy-app-config": "pnpm run generate-app-config && shopify app deploy",
+    "generate-app-config": "dotenvx run -f .env.local -- tsx ./tooling/generate-toml-files.ts"
+  },
+  "dependencies": {
+    "@harbor/database": "workspace:*",
+    "@harbor/shopee-api-client": "workspace:*",
+    "@harbor/shopee-integration": "workspace:*",
+    "@harbor/shopify-api-client": "workspace:*",
+    "@shopify/cli": "^3.80.7",
+    "@shopify/polaris": "^13.9.5",
+    "@t3-oss/env-nextjs": "^0.13.4",
+    "effect": "^3.14.13",
+    "next": "^15.3.1",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "^1.40.0",
+    "@harbor/eslint-config": "workspace:*",
+    "@harbor/prettier-config": "workspace:*",
+    "@harbor/tailwind-config": "workspace:*",
+    "@harbor/tsconfig": "workspace:*",
+    "@iarna/toml": "^2.2.5",
+    "@shopify/app-bridge-types": "^0.0.18",
+    "@types/node": "catalog:node22",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "eslint": "catalog:",
+    "jiti": "^1.21.7",
+    "prettier": "catalog:",
+    "tailwindcss": "catalog:",
+    "tsx": "^4.19.3",
+    "typescript": "catalog:"
+  },
+  "prettier": "@harbor/prettier-config"
+}

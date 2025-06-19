@@ -1,0 +1,48 @@
+{
+  "name": "@harbor/shopify-api-client",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "default": "./src/config.ts"
+    },
+    "./session-storage": {
+      "types": "./dist/session-storage.d.ts",
+      "default": "./src/session-storage.ts"
+    },
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "default": "./src/auth/index.ts"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "default": "./src/api/index.ts"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@harbor/database": "workspace:*",
+    "@shopify/shopify-api": "^11.12.0",
+    "date-fns": "^4.1.0",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@harbor/eslint-config": "workspace:*",
+    "@harbor/prettier-config": "workspace:*",
+    "@harbor/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@harbor/prettier-config"
+}
