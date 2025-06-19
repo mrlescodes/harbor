@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./webhooks": "./src/webhooks/index.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -18,6 +19,7 @@
   "dependencies": {
     "@harbor/database": "workspace:*",
     "@harbor/shopee-api-client": "workspace:^",
+    "@harbor/shopify-api-client": "workspace:^",
     "effect": "catalog:"
   },
   "devDependencies": {
