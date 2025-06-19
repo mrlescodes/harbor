@@ -2,7 +2,12 @@ import { Schema } from "effect";
 
 import { OrderStatus } from "@harbor/shopee-api-client/api";
 
-// Base webhook structure that all Shopee pushes share
+/**
+ * Base webhook
+ *
+ * @description Fields that all push notifications have in common
+ */
+
 const WebhookBase = Schema.Struct({
   shop_id: Schema.Int,
   code: Schema.Int,
@@ -10,8 +15,11 @@ const WebhookBase = Schema.Struct({
 });
 
 /**
+ * Order Status Push
+ *
  * @see https://open.shopee.com/push-mechanism/1
  */
+
 export const OrderStatusPush = Schema.Struct({
   ...WebhookBase.fields,
   code: Schema.Literal(3),
@@ -23,12 +31,15 @@ export const OrderStatusPush = Schema.Struct({
 
 export type OrderStatusPush = Schema.Schema.Type<typeof OrderStatusPush>;
 
-// Catch all for webhooks that are not implemented
-export const GenericWebhook = Schema.Struct({
-  ...WebhookBase.fields,
-  data: Schema.Unknown,
-});
+export const isOrderStatusPush = Schema.is(OrderStatusPush);
 
-export const ShopeeWebhook = Schema.Union(OrderStatusPush, GenericWebhook);
+/**
+ * Shopee Webhook
+ */
+
+export const ShopeeWebhook = Schema.Union(OrderStatusPush);
 
 export type ShopeeWebhook = Schema.Schema.Type<typeof ShopeeWebhook>;
+
+export const validateShopeeWebhook = (rawData: unknown) =>
+  Schema.decodeUnknown(ShopeeWebhook)(rawData);
