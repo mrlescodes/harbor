@@ -61,6 +61,14 @@ export const transformOrder = (orderDetail: GetOrderDetailResponse) => {
         },
       },
     ],
+    metafields: [
+      {
+        namespace: "harbor",
+        key: "shopee_order_id",
+        value: order.order_sn,
+        type: "single_line_text_field",
+      },
+    ],
     tags: "Shopee",
   };
 };
