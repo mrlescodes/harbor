@@ -28,3 +28,19 @@ export const CREATE_METAFIELD_DEFINITION = /* GraphQL */ `
     }
   }
 `;
+
+export const FIND_ORDER_BY_CUSTOM_ID = /* GraphQL */ `
+  query FindOrderByCustomId($identifier: OrderIdentifierInput!) {
+    orderByIdentifier(identifier: $identifier) {
+      id
+      fulfillmentOrders(first: 5) {
+        edges {
+          node {
+            id
+            status
+          }
+        }
+      }
+    }
+  }
+`;
