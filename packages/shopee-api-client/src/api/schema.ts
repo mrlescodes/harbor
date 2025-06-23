@@ -74,3 +74,22 @@ export const GetOrderDetailResponse = Schema.Struct({
 export type GetOrderDetailResponse = Schema.Schema.Type<
   typeof GetOrderDetailResponse
 >;
+
+export const GetEscrowDetailResponse = Schema.Struct({
+  request_id: Schema.String,
+  error: Schema.String,
+  message: Schema.String,
+  response: Schema.Struct({
+    order_income: Schema.Struct({
+      commission_fee: Schema.Number,
+      service_fee: Schema.Number,
+      shipping_seller_protection_fee_amount: Schema.Number,
+      delivery_seller_protection_fee_premium_amount: Schema.Number,
+      order_ams_commission_fee: Schema.Number,
+    }),
+  }),
+});
+
+export type GetEscrowDetailResponse = Schema.Schema.Type<
+  typeof GetEscrowDetailResponse
+>;
