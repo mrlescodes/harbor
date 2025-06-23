@@ -5,7 +5,7 @@ import { Context, Effect, Layer } from "effect";
 
 import { ShopifyAuthClient } from "../auth";
 import { ShopifyAPIConfig } from "../config";
-import { CREATE_ORDER } from "./queries";
+import { CREATE_METAFIELD_DEFINITION, CREATE_ORDER } from "./queries";
 
 const make = Effect.gen(function* () {
   const config = yield* ShopifyAPIConfig;
@@ -52,7 +52,30 @@ const make = Effect.gen(function* () {
         },
         catch: (error) => {
           console.error(error);
-          return new Error(`GraphQL request failed`);
+          return new Error("Failed to create order");
+        },
+      });
+
+      return response;
+    });
+  };
+
+  const createMetafieldDefinition = (
+    shop: string,
+    definition: Record<string, unknown>,
+  ) => {
+    return Effect.gen(function* () {
+      const { client } = yield* getGraphQLClient(shop);
+
+      const response = yield* Effect.tryPromise({
+        try: () => {
+          return client.request(CREATE_METAFIELD_DEFINITION, {
+            variables: { definition },
+          });
+        },
+        catch: (error) => {
+          console.error(error);
+          return new Error("Failed to create metafield definition");
         },
       });
 
@@ -62,6 +85,7 @@ const make = Effect.gen(function* () {
 
   return {
     createOrder,
+    createMetafieldDefinition,
   };
 });
 
