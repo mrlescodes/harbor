@@ -40,33 +40,35 @@ export type GetOrderListResponse = Schema.Schema.Type<
   typeof GetOrderListResponse
 >;
 
+export const OrderDetail = Schema.Struct({
+  order_sn: Schema.String,
+  currency: Schema.Enums(CurrencyCode),
+  total_amount: Schema.Number,
+  order_status: Schema.Enums(OrderStatus),
+  buyer_user_id: Schema.Int,
+  buyer_username: Schema.String,
+  item_list: Schema.Array(
+    Schema.Struct({
+      item_id: Schema.Int,
+      item_name: Schema.String,
+      item_sku: Schema.String,
+      model_id: Schema.Int,
+      model_name: Schema.String,
+      model_sku: Schema.String,
+      model_quantity_purchased: Schema.Int,
+      model_original_price: Schema.Number,
+    }),
+  ),
+});
+
+export type OrderDetail = Schema.Schema.Type<typeof OrderDetail>;
+
 export const GetOrderDetailResponse = Schema.Struct({
   request_id: Schema.String,
   error: Schema.String,
   message: Schema.String,
   response: Schema.Struct({
-    order_list: Schema.Array(
-      Schema.Struct({
-        order_sn: Schema.String,
-        currency: Schema.Enums(CurrencyCode),
-        total_amount: Schema.Number,
-        order_status: Schema.Enums(OrderStatus),
-        buyer_user_id: Schema.Int,
-        buyer_username: Schema.String,
-        item_list: Schema.Array(
-          Schema.Struct({
-            item_id: Schema.Int,
-            item_name: Schema.String,
-            item_sku: Schema.String,
-            model_id: Schema.Int,
-            model_name: Schema.String,
-            model_sku: Schema.String,
-            model_quantity_purchased: Schema.Int,
-            model_original_price: Schema.Number,
-          }),
-        ),
-      }),
-    ),
+    order_list: Schema.Array(OrderDetail),
   }),
   warning: Schema.optional(Schema.String),
 });
