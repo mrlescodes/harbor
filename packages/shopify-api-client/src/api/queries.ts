@@ -8,7 +8,6 @@ export const CREATE_ORDER = /* GraphQL */ `
         id
       }
       userErrors {
-        code
         field
         message
       }
@@ -23,7 +22,6 @@ export const CREATE_METAFIELD_DEFINITION = /* GraphQL */ `
         id
       }
       userErrors {
-        code
         field
         message
       }
