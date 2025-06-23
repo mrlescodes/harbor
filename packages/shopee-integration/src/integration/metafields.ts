@@ -9,7 +9,7 @@ const SHOPEE_METAFIELD_DEFINITIONS = [
     key: "shopee_order_id",
     description:
       "Shopee marketplace order identifier for cross-platform order tracking",
-    type: "single_line_text_field",
+    type: "id",
     ownerType: "ORDER",
     pin: true,
   },
