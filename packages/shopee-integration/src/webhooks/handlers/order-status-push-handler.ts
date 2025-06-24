@@ -17,7 +17,6 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
       payload.shop_id,
     );
 
-    // Bail early connection exists to avoid un-necessary API calls for webhook we cannot process
     if (!connection) {
       return yield* Effect.fail(new Error(`No connection found`));
     }
@@ -57,10 +56,52 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
   });
 };
 
+const handleCancelled = (payload: OrderStatusPush) => {
+  return Effect.gen(function* () {
+    const shopeeIntegration = yield* ShopeeIntegration;
+    const shopifyAPIClient = yield* ShopifyAPIClient;
+
+    const connection = yield* shopeeIntegration.getShopifyShopByShopeeId(
+      payload.shop_id,
+    );
+
+    if (!connection) {
+      return yield* Effect.fail(new Error(`No connection found`));
+    }
+
+    // TODO: Magic string to const
+    const order = yield* shopifyAPIClient.findOrderByCustomId(
+      connection.shopifyShop,
+      {
+        namespace: "harbor",
+        key: "shopee_order_id",
+        value: payload.data.ordersn,
+      },
+    );
+
+    // TODO: Add type generation and remove this
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+    const orderId = order.data?.orderByIdentifier?.id;
+    if (!orderId || typeof orderId !== "string") {
+      return yield* Effect.fail(new Error("No order found"));
+    }
+
+    yield* shopifyAPIClient.deleteOrder(connection.shopifyShop, orderId);
+
+    return {
+      handler: `Handled Webhook: ${OrderStatus.CANCELLED}`,
+    };
+  });
+};
+
 export const processOrderStatusPush = (payload: OrderStatusPush) => {
   return Effect.gen(function* () {
     if (payload.data.status === OrderStatus.READY_TO_SHIP) {
       return yield* handleReadyToShip(payload);
+    }
+
+    if (payload.data.status === OrderStatus.CANCELLED) {
+      return yield* handleCancelled(payload);
     }
 
     return yield* Effect.fail(new Error("Unsupported status"));
