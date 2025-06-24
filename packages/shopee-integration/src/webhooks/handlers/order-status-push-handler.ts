@@ -5,12 +5,12 @@ import { ShopifyAPIClient } from "@harbor/shopify-api-client/api";
 
 import type { OrderStatusPush } from "../schema";
 import { ShopeeIntegration } from "../../integration";
-import { transformOrder } from "../transformers/order";
+import { buildShopifyOrder } from "../transformers/build-shopify-order";
 
 const handleReadyToShip = (payload: OrderStatusPush) => {
   return Effect.gen(function* () {
-    const shopeeApiClient = yield* ShopeeAPIClient;
     const shopeeIntegration = yield* ShopeeIntegration;
+    const shopeeAPIClient = yield* ShopeeAPIClient;
     const shopifyAPIClient = yield* ShopifyAPIClient;
 
     const connection = yield* shopeeIntegration.getShopifyShopByShopeeId(
@@ -22,11 +22,30 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
       return yield* Effect.fail(new Error(`No connection found`));
     }
 
-    const shopeeOrder = yield* shopeeApiClient.getOrderDetail(payload.shop_id, {
-      orderNumbers: [payload.data.ordersn],
-    });
+    const orderDetailResponse = yield* shopeeAPIClient.getOrderDetail(
+      payload.shop_id,
+      {
+        orderNumbers: [payload.data.ordersn],
+      },
+    );
 
-    const shopifyOrder = transformOrder(shopeeOrder);
+    const orderDetail = orderDetailResponse.response.order_list[0];
+
+    // Typescript array guard
+    if (!orderDetail) {
+      return yield* Effect.fail(new Error("Order not found"));
+    }
+
+    const escrowDetailResponse = yield* shopeeAPIClient.getEscrowDetail(
+      payload.shop_id,
+      {
+        orderNumber: payload.data.ordersn,
+      },
+    );
+
+    const orderIncome = escrowDetailResponse.response.order_income;
+
+    const shopifyOrder = buildShopifyOrder(orderDetail, orderIncome);
 
     yield* shopifyAPIClient.createOrder(connection.shopifyShop, {
       order: shopifyOrder,
