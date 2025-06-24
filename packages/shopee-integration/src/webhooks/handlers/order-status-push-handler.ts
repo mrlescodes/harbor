@@ -46,9 +46,7 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
 
     const shopifyOrder = buildShopifyOrder(orderDetail, orderIncome);
 
-    yield* shopifyAPIClient.createOrder(connection.shopifyShop, {
-      order: shopifyOrder,
-    });
+    yield* shopifyAPIClient.createOrder(connection.shopifyShop, shopifyOrder);
 
     return {
       handler: `Handled Webhook: ${OrderStatus.READY_TO_SHIP}`,
@@ -94,6 +92,49 @@ const handleCancelled = (payload: OrderStatusPush) => {
   });
 };
 
+const handleShipped = (payload: OrderStatusPush) => {
+  return Effect.gen(function* () {
+    const shopeeIntegration = yield* ShopeeIntegration;
+    const shopifyAPIClient = yield* ShopifyAPIClient;
+
+    const connection = yield* shopeeIntegration.getShopifyShopByShopeeId(
+      payload.shop_id,
+    );
+
+    if (!connection) {
+      return yield* Effect.fail(new Error(`No connection found`));
+    }
+
+    // TODO: Magic string to const
+    const order = yield* shopifyAPIClient.findOrderByCustomId(
+      connection.shopifyShop,
+      {
+        namespace: "harbor",
+        key: "shopee_order_id",
+        value: payload.data.ordersn,
+      },
+    );
+
+    // TODO: Add type generation and remove this
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+    const fulfillmentOrderId =
+      order.data?.orderByIdentifier?.fulfillmentOrders?.edges[0].node.id;
+    /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+    if (!fulfillmentOrderId || typeof fulfillmentOrderId !== "string") {
+      return yield* Effect.fail(new Error("No fullfilment order found"));
+    }
+
+    yield* shopifyAPIClient.fulfillOrder(
+      connection.shopifyShop,
+      fulfillmentOrderId,
+    );
+
+    return {
+      handler: `Handled Webhook: ${OrderStatus.SHIPPED}`,
+    };
+  });
+};
+
 export const processOrderStatusPush = (payload: OrderStatusPush) => {
   return Effect.gen(function* () {
     if (payload.data.status === OrderStatus.READY_TO_SHIP) {
@@ -102,6 +143,10 @@ export const processOrderStatusPush = (payload: OrderStatusPush) => {
 
     if (payload.data.status === OrderStatus.CANCELLED) {
       return yield* handleCancelled(payload);
+    }
+
+    if (payload.data.status === OrderStatus.SHIPPED) {
+      return yield* handleShipped(payload);
     }
 
     return yield* Effect.fail(new Error("Unsupported status"));
