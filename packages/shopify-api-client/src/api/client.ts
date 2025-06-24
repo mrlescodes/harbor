@@ -11,6 +11,7 @@ import {
   CREATE_ORDER,
   DELETE_ORDER,
   FIND_ORDER_BY_CUSTOM_ID,
+  FULFILL_ORDER,
 } from "./queries";
 
 const make = Effect.gen(function* () {
@@ -156,9 +157,7 @@ const make = Effect.gen(function* () {
 
       const response = yield* Effect.tryPromise({
         try: () => {
-          return client.request(CREATE_METAFIELD_DEFINITION, {
-            variables,
-          });
+          return client.request(CREATE_METAFIELD_DEFINITION, { variables });
         },
         catch: (error) => {
           console.error(error);
@@ -192,13 +191,39 @@ const make = Effect.gen(function* () {
 
       const response = yield* Effect.tryPromise({
         try: () => {
-          return client.request(FIND_ORDER_BY_CUSTOM_ID, {
-            variables,
-          });
+          return client.request(FIND_ORDER_BY_CUSTOM_ID, { variables });
         },
         catch: (error) => {
           console.error(error);
           return new Error("Failed to find order by custom ID");
+        },
+      });
+
+      return response;
+    });
+  };
+
+  /**
+   * @see https://shopify.dev/docs/api/admin-graphql/latest/mutations/fulfillmentcreate
+   */
+  const fulfillOrder = (shop: string, fulfillmentOrderId: string) => {
+    return Effect.gen(function* () {
+      const { client } = yield* getGraphQLClient(shop);
+
+      const variables = {
+        fulfillment: {
+          lineItemsByFulfillmentOrder: { fulfillmentOrderId },
+          notifyCustomer: false,
+        },
+      };
+
+      const response = yield* Effect.tryPromise({
+        try: () => {
+          return client.request(FULFILL_ORDER, { variables });
+        },
+        catch: (error) => {
+          console.error(error);
+          return new Error("Failed to fulfill order");
         },
       });
 
@@ -212,6 +237,7 @@ const make = Effect.gen(function* () {
     deleteOrder,
     createMetafieldDefinition,
     findOrderByCustomId,
+    fulfillOrder,
   };
 });
 

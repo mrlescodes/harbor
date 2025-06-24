@@ -89,3 +89,17 @@ export const FIND_ORDER_BY_CUSTOM_ID = /* GraphQL */ `
     }
   }
 `;
+
+export const FULFILL_ORDER = /* GraphQL */ `
+  mutation FulfillOrder($fulfillment: FulfillmentInput!, $message: String) {
+    fulfillmentCreate(fulfillment: $fulfillment, message: $message) {
+      fulfillment {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
