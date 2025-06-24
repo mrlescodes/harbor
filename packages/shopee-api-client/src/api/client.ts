@@ -10,7 +10,11 @@ import { Context, Effect, Layer } from "effect";
 import { ShopeeAuthClient } from "../auth";
 import { ShopeeAPIConfig } from "../config";
 import { generateSignature, getCurrentTimestamp } from "../utils";
-import { GetOrderDetailResponse, GetOrderListResponse } from "./schema";
+import {
+  GetEscrowDetailResponse,
+  GetOrderDetailResponse,
+  GetOrderListResponse,
+} from "./schema";
 
 const make = Effect.gen(function* () {
   const defaultClient = yield* HttpClient.HttpClient;
@@ -68,8 +72,6 @@ const make = Effect.gen(function* () {
   };
 
   /**
-   * Get list of orders for a shop
-   *
    * @see https://open.shopee.com/documents/v2/v2.order.get_order_list?module=94&type=1
    */
   const getOrderList = (
@@ -162,9 +164,38 @@ const make = Effect.gen(function* () {
     }).pipe(Effect.scoped);
   };
 
+  /**
+   * @see https://open.shopee.com/documents/v2/v2.payment.get_escrow_detail?module=97&type=1
+   */
+  const getEscrowDetail = (shopId: number, params: { orderNumber: string }) => {
+    const apiPath = "/api/v2/payment/get_escrow_detail";
+
+    const additionalParams = {
+      order_sn: params.orderNumber,
+    };
+
+    return Effect.gen(function* () {
+      const accessToken = yield* authClient.getValidAccessToken(shopId);
+
+      const client = prepareRequest(
+        apiPath,
+        shopId,
+        accessToken,
+        additionalParams,
+      );
+      const req = HttpClientRequest.get(apiPath);
+      const response = yield* client.execute(req);
+
+      return yield* HttpClientResponse.schemaBodyJson(GetEscrowDetailResponse)(
+        response,
+      );
+    }).pipe(Effect.scoped);
+  };
+
   return {
     getOrderList,
     getOrderDetail,
+    getEscrowDetail,
   };
 });
 
