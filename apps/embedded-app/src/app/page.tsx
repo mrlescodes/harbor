@@ -1,15 +1,20 @@
 "use client";
 
-import { Card, Page } from "@shopify/polaris";
+import { Page } from "@shopify/polaris";
 
-import { ShopeeConnectionButton } from "~/components/shopee-connection-button";
+import { ProductList } from "~/components/products/ProductList";
 
-export default function Home() {
+const PRODUCTS = [
+  { id: "1", name: "Surfboard" },
+  { id: "2", name: "Board" },
+  { id: "3", name: "Rudder" },
+  { id: "4", name: "Oar" },
+];
+
+export default function ProductsPage() {
   return (
-    <Page title="Settings">
-      <Card>
-        <ShopeeConnectionButton />
-      </Card>
+    <Page title="Products">
+      <ProductList products={PRODUCTS} />
     </Page>
   );
 }
