@@ -3,6 +3,7 @@
 import { Effect } from "effect";
 
 import { setupShopeeMetafields } from "@harbor/shopee-integration/integration";
+import { ShopifyAPIClient } from "@harbor/shopify-api-client/api";
 import { ShopifyAuthClient } from "@harbor/shopify-api-client/auth";
 
 import { databaseService } from "../database/database-service";
@@ -34,4 +35,26 @@ export const handleInitialLoad = async ({
 
     await RuntimeServer.runPromise(program);
   }
+};
+
+export const getProducts = async (shop: string) => {
+  const program = Effect.gen(function* () {
+    const shopifyAPIClient = yield* ShopifyAPIClient;
+
+    const products = yield* shopifyAPIClient.getProducts(shop);
+
+    return {
+      success: true as const,
+      products,
+    };
+  }).pipe(
+    Effect.catchAll(() => {
+      return Effect.succeed({
+        success: false as const,
+        error: "Failed to fetch products. Please try again later.",
+      });
+    }),
+  );
+
+  return await RuntimeServer.runPromise(program);
 };

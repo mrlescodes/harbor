@@ -12,6 +12,7 @@ import {
   DELETE_ORDER,
   FIND_ORDER_BY_CUSTOM_ID,
   FULFILL_ORDER,
+  GET_PRODUCTS,
 } from "./queries";
 
 const make = Effect.gen(function* () {
@@ -231,6 +232,27 @@ const make = Effect.gen(function* () {
     });
   };
 
+  /**
+   * @see https://shopify.dev/docs/api/admin-graphql/latest/queries/products
+   */
+  const getProducts = (shop: string) => {
+    return Effect.gen(function* () {
+      const { client } = yield* getGraphQLClient(shop);
+
+      const response = yield* Effect.tryPromise({
+        try: () => {
+          return client.request(GET_PRODUCTS);
+        },
+        catch: (error) => {
+          console.error(error);
+          return new Error("Failed to get products");
+        },
+      });
+
+      return response;
+    });
+  };
+
   return {
     createOrder,
     cancelOrder,
@@ -238,6 +260,7 @@ const make = Effect.gen(function* () {
     createMetafieldDefinition,
     findOrderByCustomId,
     fulfillOrder,
+    getProducts,
   };
 });
 

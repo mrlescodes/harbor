@@ -103,3 +103,19 @@ export const FULFILL_ORDER = /* GraphQL */ `
     }
   }
 `;
+
+export const GET_PRODUCTS = /* GraphQL */ `
+  query GetProducts {
+    products(first: 10) {
+      nodes {
+        id
+        title
+        variants(first: 10) {
+          nodes {
+            id
+          }
+        }
+      }
+    }
+  }
+`;
