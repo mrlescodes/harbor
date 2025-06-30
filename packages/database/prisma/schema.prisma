@@ -53,3 +53,20 @@ model ShopeeConnection {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// TODO: Should we add the SKU?
+model MarketplaceProductMapping {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  shopifyProductId String
+  shopifyVariantId String
+
+  marketplaceProductId Int
+  marketplaceVariantId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // TODO: Indexes?
+  @@unique([shopifyProductId, shopifyVariantId])
+}

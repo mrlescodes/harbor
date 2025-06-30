@@ -58,3 +58,27 @@ export const getProducts = async (shop: string) => {
 
   return await RuntimeServer.runPromise(program);
 };
+
+export const findProductById = async (shop: string, id: string) => {
+  const program = Effect.gen(function* () {
+    const shopifyAPIClient = yield* ShopifyAPIClient;
+
+    // TODO: Build shopify GUID util
+    const gid = `gid://shopify/Product/${id}`;
+    const result = yield* shopifyAPIClient.findProductById(shop, gid);
+
+    return {
+      success: true as const,
+      result,
+    };
+  }).pipe(
+    Effect.catchAll(() => {
+      return Effect.succeed({
+        success: false as const,
+        error: "Failed to find product by id.",
+      });
+    }),
+  );
+
+  return await RuntimeServer.runPromise(program);
+};

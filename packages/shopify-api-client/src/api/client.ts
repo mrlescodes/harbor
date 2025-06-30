@@ -11,6 +11,7 @@ import {
   CREATE_ORDER,
   DELETE_ORDER,
   FIND_ORDER_BY_CUSTOM_ID,
+  FIND_PRODUCT_BY_ID,
   FULFILL_ORDER,
   GET_PRODUCTS,
 } from "./queries";
@@ -47,6 +48,34 @@ const make = Effect.gen(function* () {
       return new shopify.clients.Graphql({
         session,
       });
+    });
+  };
+
+  /**
+   * @see https://shopify.dev/docs/api/admin-graphql/latest/mutations/metafielddefinitioncreate
+   */
+  const createMetafieldDefinition = (
+    shop: string,
+    definition: Record<string, unknown>,
+  ) => {
+    return Effect.gen(function* () {
+      const { client } = yield* getGraphQLClient(shop);
+
+      const variables = {
+        definition,
+      };
+
+      const response = yield* Effect.tryPromise({
+        try: () => {
+          return client.request(CREATE_METAFIELD_DEFINITION, { variables });
+        },
+        catch: (error) => {
+          console.error(error);
+          return new Error("Failed to create metafield definition");
+        },
+      });
+
+      return response;
     });
   };
 
@@ -143,34 +172,6 @@ const make = Effect.gen(function* () {
   };
 
   /**
-   * @see https://shopify.dev/docs/api/admin-graphql/latest/mutations/metafielddefinitioncreate
-   */
-  const createMetafieldDefinition = (
-    shop: string,
-    definition: Record<string, unknown>,
-  ) => {
-    return Effect.gen(function* () {
-      const { client } = yield* getGraphQLClient(shop);
-
-      const variables = {
-        definition,
-      };
-
-      const response = yield* Effect.tryPromise({
-        try: () => {
-          return client.request(CREATE_METAFIELD_DEFINITION, { variables });
-        },
-        catch: (error) => {
-          console.error(error);
-          return new Error("Failed to create metafield definition");
-        },
-      });
-
-      return response;
-    });
-  };
-
-  /**
    * @see https://shopify.dev/docs/api/admin-graphql/latest/queries/orderbyidentifier
    */
   const findOrderByCustomId = (
@@ -253,14 +254,42 @@ const make = Effect.gen(function* () {
     });
   };
 
+  /**
+   * @see https://shopify.dev/docs/api/admin-graphql/latest/queries/productbyidentifier
+   */
+  const findProductById = (shop: string, id: string) => {
+    return Effect.gen(function* () {
+      const { client } = yield* getGraphQLClient(shop);
+
+      const variables = {
+        identifier: {
+          id,
+        },
+      };
+
+      const response = yield* Effect.tryPromise({
+        try: () => {
+          return client.request(FIND_PRODUCT_BY_ID, { variables });
+        },
+        catch: (error) => {
+          console.error(error);
+          return new Error("Failed to find product by Id");
+        },
+      });
+
+      return response;
+    });
+  };
+
   return {
+    createMetafieldDefinition,
     createOrder,
     cancelOrder,
     deleteOrder,
-    createMetafieldDefinition,
     findOrderByCustomId,
     fulfillOrder,
     getProducts,
+    findProductById,
   };
 });
 

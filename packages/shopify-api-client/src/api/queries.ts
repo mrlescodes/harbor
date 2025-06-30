@@ -1,3 +1,17 @@
+export const CREATE_METAFIELD_DEFINITION = /* GraphQL */ `
+  mutation CreateMetafieldDefinition($definition: MetafieldDefinitionInput!) {
+    metafieldDefinitionCreate(definition: $definition) {
+      createdDefinition {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
 export const CREATE_ORDER = /* GraphQL */ `
   mutation CreateOrder(
     $order: OrderCreateOrderInput!
@@ -60,20 +74,6 @@ export const DELETE_ORDER = /* GraphQL */ `
   }
 `;
 
-export const CREATE_METAFIELD_DEFINITION = /* GraphQL */ `
-  mutation CreateMetafieldDefinition($definition: MetafieldDefinitionInput!) {
-    metafieldDefinitionCreate(definition: $definition) {
-      createdDefinition {
-        id
-      }
-      userErrors {
-        field
-        message
-      }
-    }
-  }
-`;
-
 export const FIND_ORDER_BY_CUSTOM_ID = /* GraphQL */ `
   query FindOrderByCustomId($identifier: OrderIdentifierInput!) {
     orderByIdentifier(identifier: $identifier) {
@@ -113,6 +113,26 @@ export const GET_PRODUCTS = /* GraphQL */ `
         variants(first: 10) {
           nodes {
             id
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const FIND_PRODUCT_BY_ID = /* GraphQL */ `
+  query FindProductById($identifier: ProductIdentifierInput!) {
+    productByIdentifier(identifier: $identifier) {
+      id
+      handle
+      title
+      hasOnlyDefaultVariant
+      variants(first: 250) {
+        edges {
+          node {
+            id
+            title
+            sku
           }
         }
       }
