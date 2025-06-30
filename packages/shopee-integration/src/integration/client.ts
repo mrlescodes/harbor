@@ -117,6 +117,35 @@ const make = Effect.gen(function* () {
       },
     });
   };
+  const getMarketplaceProductMappings = (
+    products: {
+      marketplaceProductId: number;
+      marketplaceVariantId?: number;
+    }[],
+  ) => {
+    return Effect.tryPromise({
+      try: () => {
+        const whereConditions = products.map((product) => ({
+          marketplaceProductId: product.marketplaceProductId,
+          ...(product.marketplaceVariantId && {
+            marketplaceVariantId: product.marketplaceVariantId,
+          }),
+        }));
+
+        return prisma.marketplaceProductMapping.findMany({
+          where: {
+            OR: whereConditions,
+          },
+        });
+      },
+      catch: (error) => {
+        console.log(error);
+        return new Error(
+          `Failed to retrieve marketplace mappings for ${products.length} items`,
+        );
+      },
+    });
+  };
 
   return {
     createConnection,
@@ -124,6 +153,7 @@ const make = Effect.gen(function* () {
     getConnectionByShopeeId,
     getConnectionByShopifyShop,
     createMarketplaceProductMapping,
+    getMarketplaceProductMappings,
   };
 });
 

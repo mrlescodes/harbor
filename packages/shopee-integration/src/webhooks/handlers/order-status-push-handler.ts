@@ -44,7 +44,67 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
 
     const orderIncome = escrowDetailResponse.response.order_income;
 
-    const shopifyOrder = buildShopifyOrder(orderDetail, orderIncome);
+    /**
+     * Prepare Line items
+     */
+
+    // Transform response
+    const items = orderDetail.item_list.map((item) => {
+      return {
+        marketplaceProductId: item.item_id,
+        ...(item.model_id !== 0 && {
+          marketplaceVariantId: item.model_id,
+        }),
+      };
+    });
+
+    const marketplaceProductMappingsResponse =
+      yield* shopeeIntegration.getMarketplaceProductMappings(items);
+
+    // Build a Map for quick lookup using item_id + model_id combo as key
+    const mappingMap = new Map<string, string>( // string to shopifyVariantId
+      marketplaceProductMappingsResponse.map((m) => {
+        const key = `${m.marketplaceProductId}:${m.marketplaceVariantId ?? "null"}`;
+        return [key, m.shopifyVariantId]; // shopifyVariantId is what Shopify expects
+      }),
+    );
+
+    // Build line items
+    const lineItems = orderDetail.item_list.map((item) => {
+      const mappingKey = `${item.item_id}:${item.model_id || "null"}`;
+      const mappedShopifyId = mappingMap.get(mappingKey);
+
+      if (mappedShopifyId) {
+        return {
+          variantId: mappedShopifyId,
+          quantity: item.model_quantity_purchased,
+          priceSet: {
+            shopMoney: {
+              amount: item.model_original_price,
+              currencyCode: orderDetail.currency,
+            },
+          },
+        };
+      }
+
+      return {
+        title: item.item_name,
+        priceSet: {
+          shopMoney: {
+            amount: item.model_original_price,
+            currencyCode: orderDetail.currency,
+          },
+        },
+        quantity: item.model_quantity_purchased,
+        requiresShipping: true,
+      };
+    });
+
+    /**
+     * Prepare Order
+     */
+
+    const shopifyOrder = buildShopifyOrder(orderDetail, orderIncome, lineItems);
 
     yield* shopifyAPIClient.createOrder(connection.shopifyShop, shopifyOrder);
 
