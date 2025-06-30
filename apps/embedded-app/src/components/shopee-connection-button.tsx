@@ -33,8 +33,8 @@ export const ShopeeConnectionButton = () => {
 
   // TODO: Add support for disconnect
   return (
-    <Button onClick={handleConnect} disabled={isLoading}>
-      {isLoading ? "Connecting..." : "Connect Shopee Store"}
+    <Button variant="primary" onClick={handleConnect} disabled={isLoading}>
+      {isLoading ? "Connecting..." : "Connect"}
     </Button>
   );
 };

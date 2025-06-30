@@ -3,19 +3,8 @@ import type { OrderDetail, OrderIncome } from "@harbor/shopee-api-client/api";
 export const buildShopifyOrder = (
   orderDetail: OrderDetail,
   orderIncome: OrderIncome,
+  lineItems: Record<string, unknown>[], // TODO: Types
 ) => {
-  const lineItems = orderDetail.item_list.map((item) => ({
-    title: item.item_name,
-    priceSet: {
-      shopMoney: {
-        amount: item.model_original_price,
-        currencyCode: orderDetail.currency,
-      },
-    },
-    quantity: item.model_quantity_purchased,
-    requiresShipping: true,
-  }));
-
   const totalFees =
     orderIncome.commission_fee +
     orderIncome.delivery_seller_protection_fee_premium_amount +

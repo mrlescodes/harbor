@@ -83,11 +83,77 @@ const make = Effect.gen(function* () {
     });
   };
 
+  const createMarketplaceProductMapping = (mapping: {
+    shopifyProductId: string;
+    shopifyVariantId: string;
+    marketplaceProductId: number;
+    marketplaceVariantId?: number;
+  }) => {
+    return Effect.tryPromise({
+      try: () =>
+        prisma.marketplaceProductMapping.upsert({
+          where: {
+            shopifyProductId_shopifyVariantId: {
+              shopifyProductId: mapping.shopifyProductId,
+              shopifyVariantId: mapping.shopifyVariantId,
+            },
+          },
+          update: {
+            marketplaceProductId: mapping.marketplaceProductId,
+            marketplaceVariantId: mapping.marketplaceVariantId,
+          },
+          create: {
+            shopifyProductId: mapping.shopifyProductId,
+            shopifyVariantId: mapping.shopifyVariantId,
+            marketplaceProductId: mapping.marketplaceProductId,
+            marketplaceVariantId: mapping.marketplaceVariantId,
+          },
+        }),
+      catch: (error) => {
+        console.log(error);
+        return new Error(
+          `Failed to create mapping for Shopify Product ${mapping.shopifyProductId} and Shopee Product ${mapping.marketplaceProductId}`,
+        );
+      },
+    });
+  };
+  const getMarketplaceProductMappings = (
+    products: {
+      marketplaceProductId: number;
+      marketplaceVariantId?: number;
+    }[],
+  ) => {
+    return Effect.tryPromise({
+      try: () => {
+        const whereConditions = products.map((product) => ({
+          marketplaceProductId: product.marketplaceProductId,
+          ...(product.marketplaceVariantId && {
+            marketplaceVariantId: product.marketplaceVariantId,
+          }),
+        }));
+
+        return prisma.marketplaceProductMapping.findMany({
+          where: {
+            OR: whereConditions,
+          },
+        });
+      },
+      catch: (error) => {
+        console.log(error);
+        return new Error(
+          `Failed to retrieve marketplace mappings for ${products.length} items`,
+        );
+      },
+    });
+  };
+
   return {
     createConnection,
     getShopifyShopByShopeeId,
     getConnectionByShopeeId,
     getConnectionByShopifyShop,
+    createMarketplaceProductMapping,
+    getMarketplaceProductMappings,
   };
 });
 
