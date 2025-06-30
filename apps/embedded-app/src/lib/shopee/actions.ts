@@ -3,6 +3,7 @@
 import { Effect } from "effect";
 
 import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
+import { ShopeeIntegration } from "@harbor/shopee-integration/integration";
 
 import { env } from "~/env";
 import { RuntimeServer } from "../runtime-server";
@@ -15,6 +16,33 @@ export const getShopeeAuthUrl = async (shop: string) => {
 
     return shopeeAuthClient.getAuthUrl(redirectUrl);
   });
+
+  return RuntimeServer.runPromise(program);
+};
+
+export const createMarketplaceProductMapping = async (mapping: {
+  shopifyProductId: string;
+  shopifyVariantId: string;
+  marketplaceProductId: number;
+  marketplaceVariantId?: number;
+}) => {
+  const program = Effect.gen(function* () {
+    const client = yield* ShopeeIntegration;
+
+    const result = yield* client.createMarketplaceProductMapping(mapping);
+
+    return {
+      success: true as const,
+      result,
+    };
+  }).pipe(
+    Effect.catchAll(() => {
+      return Effect.succeed({
+        success: false as const,
+        error: "Failed to create product mapping.",
+      });
+    }),
+  );
 
   return RuntimeServer.runPromise(program);
 };

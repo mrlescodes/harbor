@@ -83,11 +83,47 @@ const make = Effect.gen(function* () {
     });
   };
 
+  const createMarketplaceProductMapping = (mapping: {
+    shopifyProductId: string;
+    shopifyVariantId: string;
+    marketplaceProductId: number;
+    marketplaceVariantId?: number;
+  }) => {
+    return Effect.tryPromise({
+      try: () =>
+        prisma.marketplaceProductMapping.upsert({
+          where: {
+            shopifyProductId_shopifyVariantId: {
+              shopifyProductId: mapping.shopifyProductId,
+              shopifyVariantId: mapping.shopifyVariantId,
+            },
+          },
+          update: {
+            marketplaceProductId: mapping.marketplaceProductId,
+            marketplaceVariantId: mapping.marketplaceVariantId,
+          },
+          create: {
+            shopifyProductId: mapping.shopifyProductId,
+            shopifyVariantId: mapping.shopifyVariantId,
+            marketplaceProductId: mapping.marketplaceProductId,
+            marketplaceVariantId: mapping.marketplaceVariantId,
+          },
+        }),
+      catch: (error) => {
+        console.log(error);
+        return new Error(
+          `Failed to create mapping for Shopify Product ${mapping.shopifyProductId} and Shopee Product ${mapping.marketplaceProductId}`,
+        );
+      },
+    });
+  };
+
   return {
     createConnection,
     getShopifyShopByShopeeId,
     getConnectionByShopeeId,
     getConnectionByShopifyShop,
+    createMarketplaceProductMapping,
   };
 });
 
