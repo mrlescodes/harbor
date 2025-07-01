@@ -105,8 +105,8 @@ export const FULFILL_ORDER = /* GraphQL */ `
 `;
 
 export const GET_PRODUCTS = /* GraphQL */ `
-  query GetProducts {
-    products(first: 10) {
+  query GetProducts($first: Int!) {
+    products(first: $first) {
       nodes {
         id
         title
