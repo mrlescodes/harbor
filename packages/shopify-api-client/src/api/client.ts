@@ -236,13 +236,22 @@ const make = Effect.gen(function* () {
   /**
    * @see https://shopify.dev/docs/api/admin-graphql/latest/queries/products
    */
-  const getProducts = (shop: string) => {
+  const getProducts = (
+    shop: string,
+    options?: {
+      limit?: number;
+    },
+  ) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
 
+      const variables = {
+        first: options?.limit ?? 50,
+      };
+
       const response = yield* Effect.tryPromise({
         try: () => {
-          return client.request(GET_PRODUCTS);
+          return client.request(GET_PRODUCTS, { variables });
         },
         catch: (error) => {
           console.error(error);
