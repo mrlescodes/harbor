@@ -59,7 +59,7 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
     });
 
     const marketplaceProductMappingsResponse =
-      yield* shopeeIntegration.getMarketplaceProductMappings(items);
+      yield* shopeeIntegration.getMappingsByMarketplaceIds(items);
 
     // Build a Map for quick lookup using item_id + model_id combo as key
     const mappingMap = new Map<string, string>( // string to shopifyVariantId
