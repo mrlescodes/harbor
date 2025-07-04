@@ -67,14 +67,17 @@ export const getProductMappingData = async (shop: string, id: string) => {
     const shopifyAPIClient = yield* ShopifyAPIClient;
     const shopeeIntegrationClient = yield* ShopeeIntegration;
 
-    // Construct the Shopify GID
+    // TODO: UTILS Construct the Shopify GID
     const gid = `gid://shopify/Product/${id}`;
 
     // 1. Fetch product details from Shopify
-    const shopifyResult = yield* shopifyAPIClient.findProductById(shop, gid);
-    const shopifyProduct = shopifyResult?.data?.productByIdentifier;
+    const shopifyResult = yield* shopifyAPIClient.findProductByIdentifier(
+      shop,
+      { id: gid },
+    );
+    const shopifyProduct = shopifyResult.data?.productByIdentifier;
 
-    if (!shopifyProduct?.id) {
+    if (!shopifyProduct) {
       return yield* Effect.fail(
         new Error("Shopify product not found or missing ID."),
       );
@@ -89,7 +92,7 @@ export const getProductMappingData = async (shop: string, id: string) => {
     // 3. Extract marketplace product ID (same for all variants)
     const marketplaceProductId =
       marketplaceMappings.length > 0
-        ? marketplaceMappings[0].marketplaceProductId
+        ? marketplaceMappings[0]?.marketplaceProductId
         : null;
 
     // 4. Transform and merge data
@@ -116,7 +119,6 @@ export const getProductMappingData = async (shop: string, id: string) => {
     const data = {
       // Flattened product info
       shopifyProductId: shopifyProduct.id,
-      shopifyProductHandle: shopifyProduct.handle,
       shopifyProductTitle: shopifyProduct.title,
       hasOnlyDefaultVariant: shopifyProduct.hasOnlyDefaultVariant,
 
