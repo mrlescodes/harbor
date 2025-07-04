@@ -1,23 +1,16 @@
 "use client";
 
-// TODO: Replace with shadcn form setup
-// TODO: Display UI feedback
 import { useEffect, useState, useTransition } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  Box,
-  Button,
-  Card,
-  Form,
-  FormLayout,
-  Page,
-  Text,
-  TextField,
-} from "@shopify/polaris";
+import { Box, Card, Page, Text } from "@shopify/polaris";
 
 import { useAppBridge } from "~/components/app-bridge";
-import { createMarketplaceProductMapping } from "~/lib/shopee/actions";
-import { findProductById } from "~/lib/shopify/actions";
+import { MarketplaceProductMappingForm } from "~/components/products/MarketplaceProductMappingForm";
+import {
+  createMarketplaceProductMapping,
+  createMarketplaceProductMappings,
+} from "~/lib/shopee/actions";
+import { getProductMappingData } from "~/lib/shopify/actions";
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -28,12 +21,6 @@ export default function ProductPage() {
   const [product, setProduct] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-
-  // Form data for single variant products
-  const [formData, setFormData] = useState({
-    shopeeProductId: "",
-    shopeeVariantId: "",
-  });
 
   useEffect(() => {
     const shop = app.config.shop;
@@ -50,11 +37,10 @@ export default function ProductPage() {
 
     const getProductDetail = () => {
       startTransition(async () => {
-        const result = await findProductById(shop, id);
+        const result = await getProductMappingData(shop, id);
 
         if (result.success) {
-          const productData = result.result.data?.productByIdentifier;
-          console.log(result);
+          const productData = result.result;
           setProduct(productData);
         } else {
           setError(result.error || "Failed to load product");
@@ -69,20 +55,51 @@ export default function ProductPage() {
     router.push("/");
   };
 
-  const handleSingleVariantSubmit = async () => {
-    const shopifyProductId = product.id as string;
-    const shopifyVariantId = product.variants.edges[0].node.id as string;
+  // TODO: UI Feedback
+  const handleSubmit = async (formValues: unknown) => {
+    const shopifyProductId = product?.shopifyProductId as string;
+    const shopifyVariantId = product?.variants[0].shopifyVariantId as string;
 
-    const mapping = {
-      shopifyProductId: shopifyProductId,
-      shopifyVariantId: shopifyVariantId,
-      marketplaceProductId: parseInt(formData.shopeeProductId),
-    };
+    if (product?.hasOnlyDefaultVariant) {
+      const mapping = {
+        shopifyProductId: shopifyProductId,
+        shopifyVariantId: shopifyVariantId,
+        marketplaceProductId: parseInt(formValues.marketplaceProductId),
+      };
 
-    const result = await createMarketplaceProductMapping(mapping);
+      const result = await createMarketplaceProductMapping(mapping);
 
-    if (result.success) {
-      console.log("Success");
+      if (result.success) {
+        console.log("Success");
+      }
+    } else {
+      const marketplaceProductId = formValues.marketplaceProductId;
+
+      // Iterate through form variants and combine with original product data
+      const mappingsToSubmit = formValues.variants
+        .map((formVariant) => {
+          // TODO: DANGER ZONE, extract logic Marketplace variant NEED to have a variant id
+          if (!formVariant.marketplaceVariantId) {
+            return null;
+          }
+
+          return {
+            shopifyProductId: shopifyProductId,
+            shopifyVariantId: formVariant.shopifyVariantId,
+            marketplaceProductId: parseInt(marketplaceProductId, 10),
+            marketplaceVariantId: parseInt(
+              formVariant.marketplaceVariantId,
+              10,
+            ),
+          };
+        })
+        .filter(Boolean);
+
+      const result = await createMarketplaceProductMappings(mappingsToSubmit);
+
+      if (result.success) {
+        console.log("Success");
+      }
     }
   };
 
@@ -106,42 +123,18 @@ export default function ProductPage() {
     <Page backAction={{ onAction: () => handleBack() }} title="Product Page">
       <Card>
         <Box paddingBlockEnd="400">
-          <Text as="h2" variant="headingSm">
-            Link to existing product
+          <Text as="h2" variant="heading2xl">
+            Link to existing shopee product
           </Text>
         </Box>
 
-        <Box maxWidth="800px">
-          <Text as="h1">Product: {product?.title}</Text>
-
-          {product?.hasOnlyDefaultVariant && (
-            <>
-              <Text as="h3" variant="headingMd">
-                Default Product
-              </Text>
-              <Form onSubmit={handleSingleVariantSubmit}>
-                <FormLayout>
-                  <TextField
-                    label="Shopee Product ID"
-                    name="shopeeProductId"
-                    value={formData.shopeeProductId}
-                    onChange={(value) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        shopeeProductId: value,
-                      }))
-                    }
-                    autoComplete="off"
-                    requiredIndicator
-                  />
-
-                  <Button fullWidth variant="primary" submit>
-                    Create Mapping
-                  </Button>
-                </FormLayout>
-              </Form>
-            </>
-          )}
+        <Box>
+          <MarketplaceProductMappingForm
+            hasOnlyDefaultVariant={product?.hasOnlyDefaultVariant}
+            variants={product?.variants}
+            marketplaceProductId={product?.marketplaceProductId}
+            onSubmit={handleSubmit}
+          />
         </Box>
       </Card>
     </Page>
