@@ -1,10 +1,18 @@
 import type { OrderDetail, OrderIncome } from "@harbor/shopee-api-client/api";
+import type {
+  OrderCreateLineItemInput,
+  OrderCreateOrderInput,
+} from "@harbor/shopify-api-client";
+import {
+  OrderTransactionKind,
+  OrderTransactionStatus,
+} from "@harbor/shopify-api-client";
 
 export const buildShopifyOrder = (
   orderDetail: OrderDetail,
   orderIncome: OrderIncome,
-  lineItems: Record<string, unknown>[], // TODO: Types
-) => {
+  lineItems: OrderCreateLineItemInput[],
+): OrderCreateOrderInput => {
   const totalFees =
     orderIncome.commission_fee +
     orderIncome.delivery_seller_protection_fee_premium_amount +
@@ -26,8 +34,8 @@ export const buildShopifyOrder = (
 
   const transactions = [
     {
-      kind: "SALE",
-      status: "SUCCESS",
+      kind: OrderTransactionKind.Sale,
+      status: OrderTransactionStatus.Success,
       gateway: "Shopee",
       amountSet: {
         shopMoney: {
@@ -54,7 +62,7 @@ export const buildShopifyOrder = (
     },
   };
 
-  const tags = "Shopee";
+  const tags = ["Shopee"];
 
   // Full order
   const shopeeOrder = {
