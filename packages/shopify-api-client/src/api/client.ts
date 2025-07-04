@@ -3,7 +3,7 @@ import "@shopify/shopify-api/adapters/node";
 import { shopifyApi } from "@shopify/shopify-api";
 import { Context, Effect, Layer } from "effect";
 
-import type { MetafieldDefinitionInput } from "../types";
+import type { MetafieldDefinitionInput, OrderCreateOrderInput } from "../types";
 import { ShopifyAuthClient } from "../auth";
 import { ShopifyAPIConfig } from "../config";
 import {
@@ -83,7 +83,7 @@ const make = Effect.gen(function* () {
   /**
    * @see https://shopify.dev/docs/api/admin-graphql/latest/mutations/ordercreate
    */
-  const createOrder = (shop: string, order: Record<string, unknown>) => {
+  const createOrder = (shop: string, order: OrderCreateOrderInput) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
 
@@ -215,7 +215,9 @@ const make = Effect.gen(function* () {
 
       const variables = {
         fulfillment: {
-          lineItemsByFulfillmentOrder: { fulfillmentOrderId },
+          lineItemsByFulfillmentOrder: [
+            { fulfillmentOrderId, fulfillmentOrderLineItems: [] },
+          ],
           notifyCustomer: false,
         },
       };
