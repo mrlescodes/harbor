@@ -28,10 +28,12 @@
     "dev": "tsc",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "graphql-codegen": "graphql-codegen"
   },
   "dependencies": {
     "@harbor/database": "workspace:*",
+    "@shopify/api-codegen-preset": "^1.1.8",
     "@shopify/shopify-api": "^11.12.0",
     "date-fns": "^4.1.0",
     "effect": "catalog:"
