@@ -41,15 +41,14 @@ export const DELETE_ORDER = /* GraphQL */ `
   }
 `;
 
-export const FIND_ORDER_BY_CUSTOM_ID = /* GraphQL */ `
-  query FindOrderByCustomId($identifier: OrderIdentifierInput!) {
+export const FIND_ORDER_BY_IDENTIFIER = /* GraphQL */ `
+  query FindOrderByIdentifier($identifier: OrderIdentifierInput!) {
     orderByIdentifier(identifier: $identifier) {
       id
       fulfillmentOrders(first: 5) {
         edges {
           node {
             id
-            status
           }
         }
       }
@@ -57,8 +56,11 @@ export const FIND_ORDER_BY_CUSTOM_ID = /* GraphQL */ `
   }
 `;
 
-export const FULFILL_ORDER = /* GraphQL */ `
-  mutation FulfillOrder($fulfillment: FulfillmentInput!, $message: String) {
+export const CREATE_FULFILLMENT = /* GraphQL */ `
+  mutation CreateFulfillment(
+    $fulfillment: FulfillmentInput!
+    $message: String
+  ) {
     fulfillmentCreate(fulfillment: $fulfillment, message: $message) {
       fulfillment {
         id
@@ -80,6 +82,7 @@ export const GET_PRODUCTS = /* GraphQL */ `
         variants(first: 10) {
           nodes {
             id
+            title
           }
         }
       }
@@ -87,11 +90,10 @@ export const GET_PRODUCTS = /* GraphQL */ `
   }
 `;
 
-export const FIND_PRODUCT_BY_ID = /* GraphQL */ `
-  query FindProductById($identifier: ProductIdentifierInput!) {
+export const FIND_PRODUCT_BY_IDENTIFIER = /* GraphQL */ `
+  query FindProductByIdentifier($identifier: ProductIdentifierInput!) {
     productByIdentifier(identifier: $identifier) {
       id
-      handle
       title
       hasOnlyDefaultVariant
       variants(first: 250) {
@@ -99,7 +101,6 @@ export const FIND_PRODUCT_BY_ID = /* GraphQL */ `
           node {
             id
             title
-            sku
           }
         }
       }

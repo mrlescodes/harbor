@@ -3,16 +3,23 @@ import "@shopify/shopify-api/adapters/node";
 import { shopifyApi } from "@shopify/shopify-api";
 import { Context, Effect, Layer } from "effect";
 
-import type { MetafieldDefinitionInput, OrderCreateOrderInput } from "../types";
+import type {
+  FulfillmentInput,
+  MetafieldDefinitionInput,
+  OrderCreateOptionsInput,
+  OrderCreateOrderInput,
+  OrderIdentifierInput,
+  ProductIdentifierInput,
+} from "../types";
 import { ShopifyAuthClient } from "../auth";
 import { ShopifyAPIConfig } from "../config";
 import {
+  CREATE_FULFILLMENT,
   CREATE_METAFIELD_DEFINITION,
   CREATE_ORDER,
   DELETE_ORDER,
-  FIND_ORDER_BY_CUSTOM_ID,
-  FIND_PRODUCT_BY_ID,
-  FULFILL_ORDER,
+  FIND_ORDER_BY_IDENTIFIER,
+  FIND_PRODUCT_BY_IDENTIFIER,
   GET_PRODUCTS,
 } from "./queries";
 
@@ -30,7 +37,7 @@ const make = Effect.gen(function* () {
     isEmbeddedApp,
   } = yield* config.getConfig;
 
-  // TODO: Extract and share across clients
+  // TODO: Extract and share across package
   const shopify = shopifyApi({
     apiKey,
     apiSecretKey,
@@ -81,11 +88,18 @@ const make = Effect.gen(function* () {
   /**
    * @see https://shopify.dev/docs/api/admin-graphql/latest/mutations/ordercreate
    */
-  const createOrder = (shop: string, order: OrderCreateOrderInput) => {
+  const createOrder = (
+    shop: string,
+    order: OrderCreateOrderInput,
+    options?: OrderCreateOptionsInput,
+  ) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
 
-      const variables = { order };
+      const variables = {
+        order,
+        options,
+      };
 
       const response = yield* Effect.tryPromise({
         try: () => {
@@ -116,7 +130,7 @@ const make = Effect.gen(function* () {
           return client.request(DELETE_ORDER, { variables });
         },
         catch: () => {
-          return new Error("Failed to cancel order");
+          return new Error("Failed to delete order");
         },
       });
 
@@ -127,29 +141,23 @@ const make = Effect.gen(function* () {
   /**
    * @see https://shopify.dev/docs/api/admin-graphql/latest/queries/orderbyidentifier
    */
-  const findOrderByCustomId = (
+  const findOrderByIdentifier = (
     shop: string,
-    customId: {
-      namespace: string;
-      key: string;
-      value: string;
-    },
+    identifier: OrderIdentifierInput,
   ) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
 
       const variables = {
-        identifier: {
-          customId,
-        },
+        identifier,
       };
 
       const response = yield* Effect.tryPromise({
         try: () => {
-          return client.request(FIND_ORDER_BY_CUSTOM_ID, { variables });
+          return client.request(FIND_ORDER_BY_IDENTIFIER, { variables });
         },
         catch: () => {
-          return new Error("Failed to find order by custom ID");
+          return new Error("Failed to find order by identifier");
         },
       });
 
@@ -160,25 +168,25 @@ const make = Effect.gen(function* () {
   /**
    * @see https://shopify.dev/docs/api/admin-graphql/latest/mutations/fulfillmentcreate
    */
-  const fulfillOrder = (shop: string, fulfillmentOrderId: string) => {
+  const createFulfillment = (
+    shop: string,
+    fulfillment: FulfillmentInput,
+    message?: string,
+  ) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
 
       const variables = {
-        fulfillment: {
-          lineItemsByFulfillmentOrder: [
-            { fulfillmentOrderId, fulfillmentOrderLineItems: [] },
-          ],
-          notifyCustomer: false,
-        },
+        fulfillment,
+        message,
       };
 
       const response = yield* Effect.tryPromise({
         try: () => {
-          return client.request(FULFILL_ORDER, { variables });
+          return client.request(CREATE_FULFILLMENT, { variables });
         },
         catch: () => {
-          return new Error("Failed to fulfill order");
+          return new Error("Failed to create fullfilment");
         },
       });
 
@@ -192,14 +200,14 @@ const make = Effect.gen(function* () {
   const getProducts = (
     shop: string,
     options?: {
-      limit?: number;
+      first?: number;
     },
   ) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
 
       const variables = {
-        first: options?.limit ?? 50,
+        first: options?.first ?? 50,
       };
 
       const response = yield* Effect.tryPromise({
@@ -218,22 +226,23 @@ const make = Effect.gen(function* () {
   /**
    * @see https://shopify.dev/docs/api/admin-graphql/latest/queries/productbyidentifier
    */
-  const findProductById = (shop: string, id: string) => {
+  const findProductByIdentifier = (
+    shop: string,
+    identifier: ProductIdentifierInput,
+  ) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
 
       const variables = {
-        identifier: {
-          id,
-        },
+        identifier,
       };
 
       const response = yield* Effect.tryPromise({
         try: () => {
-          return client.request(FIND_PRODUCT_BY_ID, { variables });
+          return client.request(FIND_PRODUCT_BY_IDENTIFIER, { variables });
         },
         catch: () => {
-          return new Error("Failed to find product by Id");
+          return new Error("Failed to find product by identifier");
         },
       });
 
@@ -245,10 +254,10 @@ const make = Effect.gen(function* () {
     createMetafieldDefinition,
     createOrder,
     deleteOrder,
-    findOrderByCustomId,
-    fulfillOrder,
+    findOrderByIdentifier,
+    createFulfillment,
     getProducts,
-    findProductById,
+    findProductByIdentifier,
   };
 });
 
