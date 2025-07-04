@@ -31,19 +31,19 @@ export const CREATE_ORDER = /* GraphQL */ `
 
 export const CANCEL_ORDER = /* GraphQL */ `
   mutation CancelOrder(
-    $notifyCustomer: Boolean
     $orderId: ID!
-    $reason: OrderCancelReason!
-    $refund: Boolean!
+    $notifyCustomer: Boolean
+    $refundMethod: OrderCancelRefundMethodInput!
     $restock: Boolean!
+    $reason: OrderCancelReason!
     $staffNote: String
   ) {
     orderCancel(
-      notifyCustomer: $notifyCustomer
       orderId: $orderId
-      reason: $reason
-      refund: $refund
+      notifyCustomer: $notifyCustomer
+      refundMethod: $refundMethod
       restock: $restock
+      reason: $reason
       staffNote: $staffNote
     ) {
       job {
