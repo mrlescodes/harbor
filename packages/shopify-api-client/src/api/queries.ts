@@ -29,39 +29,6 @@ export const CREATE_ORDER = /* GraphQL */ `
   }
 `;
 
-export const CANCEL_ORDER = /* GraphQL */ `
-  mutation CancelOrder(
-    $orderId: ID!
-    $notifyCustomer: Boolean
-    $refundMethod: OrderCancelRefundMethodInput!
-    $restock: Boolean!
-    $reason: OrderCancelReason!
-    $staffNote: String
-  ) {
-    orderCancel(
-      orderId: $orderId
-      notifyCustomer: $notifyCustomer
-      refundMethod: $refundMethod
-      restock: $restock
-      reason: $reason
-      staffNote: $staffNote
-    ) {
-      job {
-        done
-        id
-      }
-      orderCancelUserErrors {
-        field
-        message
-      }
-      userErrors {
-        field
-        message
-      }
-    }
-  }
-`;
-
 export const DELETE_ORDER = /* GraphQL */ `
   mutation DeleteOrder($orderId: ID!) {
     orderDelete(orderId: $orderId) {

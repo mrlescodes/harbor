@@ -7,7 +7,6 @@ import type { MetafieldDefinitionInput, OrderCreateOrderInput } from "../types";
 import { ShopifyAuthClient } from "../auth";
 import { ShopifyAPIConfig } from "../config";
 import {
-  CANCEL_ORDER,
   CREATE_METAFIELD_DEFINITION,
   CREATE_ORDER,
   DELETE_ORDER,
@@ -96,50 +95,6 @@ const make = Effect.gen(function* () {
         catch: (error) => {
           console.error(error);
           return new Error("Failed to create order");
-        },
-      });
-
-      return response;
-    });
-  };
-
-  /**
-   * @see https://shopify.dev/docs/api/admin-graphql/latest/mutations/ordercancel
-   */
-  const cancelOrder = (
-    shop: string,
-    orderId: string,
-    options?: {
-      notifyCustomer?: boolean;
-      reason?:
-        | "CUSTOMER"
-        | "DECLINED"
-        | "FRAUD"
-        | "INVENTORY"
-        | "OTHER"
-        | "STAFF";
-      refund?: boolean;
-      restock?: boolean;
-    },
-  ) => {
-    return Effect.gen(function* () {
-      const { client } = yield* getGraphQLClient(shop);
-
-      const variables = {
-        orderId,
-        notifyCustomer: options?.notifyCustomer ?? false,
-        reason: options?.reason ?? "OTHER",
-        refund: options?.refund ?? false,
-        restock: options?.restock ?? false,
-      };
-
-      const response = yield* Effect.tryPromise({
-        try: () => {
-          return client.request(CANCEL_ORDER, { variables });
-        },
-        catch: (error) => {
-          console.error("Order cancellation failed:", error);
-          return new Error("Failed to cancel order");
         },
       });
 
@@ -296,7 +251,6 @@ const make = Effect.gen(function* () {
   return {
     createMetafieldDefinition,
     createOrder,
-    cancelOrder,
     deleteOrder,
     findOrderByCustomId,
     fulfillOrder,
