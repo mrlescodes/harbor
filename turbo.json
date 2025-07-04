@@ -65,6 +65,16 @@
     "db:deploy": {
       "cache": false
     },
+    "generate-app-config": {
+      "cache": false
+    },
+    "deploy-app-config": {
+      "dependsOn": [
+        "generate-app-config"
+      ],
+      "cache": false,
+      "interactive": true
+    },
     "ui-add": {
       "cache": false,
       "interactive": true

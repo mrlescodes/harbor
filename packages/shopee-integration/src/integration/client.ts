@@ -117,7 +117,46 @@ const make = Effect.gen(function* () {
       },
     });
   };
-  const getMarketplaceProductMappings = (
+
+  const createMarketplaceProductMappings = (
+    mappings: {
+      shopifyProductId: string;
+      shopifyVariantId: string;
+      marketplaceProductId: number;
+      marketplaceVariantId?: number;
+    }[],
+  ) => {
+    const upsertPromises = mappings.map((mapping) => {
+      return prisma.marketplaceProductMapping.upsert({
+        where: {
+          shopifyProductId_shopifyVariantId: {
+            shopifyProductId: mapping.shopifyProductId,
+            shopifyVariantId: mapping.shopifyVariantId,
+          },
+        },
+        update: {
+          marketplaceProductId: mapping.marketplaceProductId,
+          marketplaceVariantId: mapping.marketplaceVariantId,
+        },
+        create: {
+          shopifyProductId: mapping.shopifyProductId,
+          shopifyVariantId: mapping.shopifyVariantId,
+          marketplaceProductId: mapping.marketplaceProductId,
+          marketplaceVariantId: mapping.marketplaceVariantId,
+        },
+      });
+    });
+
+    return Effect.tryPromise({
+      try: () => prisma.$transaction(upsertPromises),
+      catch: (error) => {
+        console.log(error);
+        return new Error("Failed to create mappings");
+      },
+    });
+  };
+
+  const getMappingsByMarketplaceIds = (
     products: {
       marketplaceProductId: number;
       marketplaceVariantId?: number;
@@ -147,13 +186,41 @@ const make = Effect.gen(function* () {
     });
   };
 
+  const getMappingsByShopifyIds = (
+    products: {
+      shopifyProductId: string;
+    }[],
+  ) => {
+    return Effect.tryPromise({
+      try: () => {
+        const whereConditions = products.map((product) => ({
+          shopifyProductId: product.shopifyProductId,
+        }));
+
+        return prisma.marketplaceProductMapping.findMany({
+          where: {
+            OR: whereConditions,
+          },
+        });
+      },
+      catch: (error) => {
+        console.log(error);
+        return new Error(
+          `Failed to retrieve marketplace mappings for ${products.length} items`,
+        );
+      },
+    });
+  };
+
   return {
     createConnection,
     getShopifyShopByShopeeId,
     getConnectionByShopeeId,
     getConnectionByShopifyShop,
     createMarketplaceProductMapping,
-    getMarketplaceProductMappings,
+    createMarketplaceProductMappings,
+    getMappingsByMarketplaceIds,
+    getMappingsByShopifyIds,
   };
 });
 
