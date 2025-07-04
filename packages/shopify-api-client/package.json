@@ -4,6 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
+    ".": {
+      "types": "./dist/types.d.ts",
+      "default": "./src/types.ts"
+    },
     "./config": {
       "types": "./dist/config.d.ts",
       "default": "./src/config.ts"
@@ -33,7 +37,6 @@
   },
   "dependencies": {
     "@harbor/database": "workspace:*",
-    "@shopify/api-codegen-preset": "^1.1.8",
     "@shopify/shopify-api": "^11.12.0",
     "date-fns": "^4.1.0",
     "effect": "catalog:"
@@ -42,6 +45,7 @@
     "@harbor/eslint-config": "workspace:*",
     "@harbor/prettier-config": "workspace:*",
     "@harbor/tsconfig": "workspace:*",
+    "@shopify/api-codegen-preset": "^1.1.8",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
