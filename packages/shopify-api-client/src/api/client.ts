@@ -69,8 +69,7 @@ const make = Effect.gen(function* () {
         try: () => {
           return client.request(CREATE_METAFIELD_DEFINITION, { variables });
         },
-        catch: (error) => {
-          console.error(error);
+        catch: () => {
           return new Error("Failed to create metafield definition");
         },
       });
@@ -92,8 +91,7 @@ const make = Effect.gen(function* () {
         try: () => {
           return client.request(CREATE_ORDER, { variables });
         },
-        catch: (error) => {
-          console.error(error);
+        catch: () => {
           return new Error("Failed to create order");
         },
       });
@@ -117,8 +115,7 @@ const make = Effect.gen(function* () {
         try: () => {
           return client.request(DELETE_ORDER, { variables });
         },
-        catch: (error) => {
-          console.error("Order cancellation failed:", error);
+        catch: () => {
           return new Error("Failed to cancel order");
         },
       });
@@ -151,8 +148,7 @@ const make = Effect.gen(function* () {
         try: () => {
           return client.request(FIND_ORDER_BY_CUSTOM_ID, { variables });
         },
-        catch: (error) => {
-          console.error(error);
+        catch: () => {
           return new Error("Failed to find order by custom ID");
         },
       });
@@ -181,8 +177,7 @@ const make = Effect.gen(function* () {
         try: () => {
           return client.request(FULFILL_ORDER, { variables });
         },
-        catch: (error) => {
-          console.error(error);
+        catch: () => {
           return new Error("Failed to fulfill order");
         },
       });
@@ -211,8 +206,7 @@ const make = Effect.gen(function* () {
         try: () => {
           return client.request(GET_PRODUCTS, { variables });
         },
-        catch: (error) => {
-          console.error(error);
+        catch: () => {
           return new Error("Failed to get products");
         },
       });
@@ -238,8 +232,7 @@ const make = Effect.gen(function* () {
         try: () => {
           return client.request(FIND_PRODUCT_BY_ID, { variables });
         },
-        catch: (error) => {
-          console.error(error);
+        catch: () => {
           return new Error("Failed to find product by Id");
         },
       });
