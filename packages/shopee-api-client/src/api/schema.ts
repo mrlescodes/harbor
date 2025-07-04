@@ -17,7 +17,8 @@ export enum OrderStatus {
 }
 
 export enum CurrencyCode {
-  IDR = "IDR",
+  /** Indonesian Rupiah (IDR). */
+  Idr = "IDR",
 }
 
 export const GetOrderListResponse = Schema.Struct({
