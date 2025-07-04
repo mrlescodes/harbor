@@ -3,6 +3,7 @@ import "@shopify/shopify-api/adapters/node";
 import { shopifyApi } from "@shopify/shopify-api";
 import { Context, Effect, Layer } from "effect";
 
+import type { MetafieldDefinitionInput } from "../types";
 import { ShopifyAuthClient } from "../auth";
 import { ShopifyAPIConfig } from "../config";
 import {
@@ -56,7 +57,7 @@ const make = Effect.gen(function* () {
    */
   const createMetafieldDefinition = (
     shop: string,
-    definition: Record<string, unknown>,
+    definition: MetafieldDefinitionInput,
   ) => {
     return Effect.gen(function* () {
       const { client } = yield* getGraphQLClient(shop);
