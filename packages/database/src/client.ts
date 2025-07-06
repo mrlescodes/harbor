@@ -1,4 +1,4 @@
-import { Context, Layer } from "effect";
+import { Effect } from "effect";
 
 import { PrismaClient as GeneratedPrismaClient } from "../generated/client";
 
@@ -9,9 +9,9 @@ export const prisma = globalForPrisma.prisma || new GeneratedPrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
-export class PrismaClient extends Context.Tag("PrismaClient")<
-  PrismaClient,
-  GeneratedPrismaClient
->() {
-  static readonly Live = Layer.succeed(PrismaClient, prisma);
-}
+export class PrismaClient extends Effect.Service<PrismaClient>()(
+  "PrismaClient",
+  {
+    succeed: prisma,
+  },
+) {}
