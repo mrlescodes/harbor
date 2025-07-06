@@ -19,8 +19,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: (error) => {
-            console.log(error);
+          catch: () => {
             return new Error(
               `Failed to create connection for Shopee shop ${shopeeShopId} and Shopify shop ${shopifyShop}`,
             );
@@ -41,8 +40,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: (error) => {
-            console.log(error);
+          catch: () => {
             return new Error(
               `Failed to retrieve Shopify shop for Shopee ID: ${shopeeShopId}`,
             );
@@ -59,8 +57,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: (error) => {
-            console.log(error);
+          catch: () => {
             return new Error(
               `Failed to retrieve connection for Shopee ID: ${shopeeShopId}`,
             );
@@ -77,8 +74,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: (error) => {
-            console.log(error);
+          catch: () => {
             return new Error(
               `Failed to retrieve connection for Shopify shop: ${shopifyShop}`,
             );
@@ -112,8 +108,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
                 marketplaceVariantId: mapping.marketplaceVariantId,
               },
             }),
-          catch: (error) => {
-            console.log(error);
+          catch: () => {
             return new Error(
               `Failed to create mapping for Shopify Product ${mapping.shopifyProductId} and Shopee Product ${mapping.marketplaceProductId}`,
             );
@@ -152,8 +147,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
 
         return Effect.tryPromise({
           try: () => prisma.$transaction(upsertPromises),
-          catch: (error) => {
-            console.log(error);
+          catch: () => {
             return new Error("Failed to create mappings");
           },
         });
@@ -180,8 +174,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: (error) => {
-            console.log(error);
+          catch: () => {
             return new Error(
               `Failed to retrieve marketplace mappings for ${products.length} items`,
             );
@@ -206,8 +199,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: (error) => {
-            console.log(error);
+          catch: () => {
             return new Error(
               `Failed to retrieve marketplace mappings for ${products.length} items`,
             );
