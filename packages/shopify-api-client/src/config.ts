@@ -1,6 +1,8 @@
 import type { ApiVersion } from "@shopify/shopify-api";
 import { Context, Effect, Layer } from "effect";
 
+// TODO: Convert to Effect config / service?
+
 export interface ShopifyAPIConfigParams {
   apiKey: string;
   apiSecretKey: string;

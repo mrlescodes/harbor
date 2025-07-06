@@ -1,5 +1,7 @@
 import { Context, Effect, Layer } from "effect";
 
+// TODO: Convert to Effect config / service?
+
 export interface ShopeeAPIConfigParams {
   apiBaseUrl: string;
   partnerId: number;
