@@ -23,12 +23,12 @@ const ShopeeAPIConfigLayerLive = createShopeeAPIConfigLayer({
   apiBaseUrl: env.SHOPEE_API_BASE_URL,
 });
 
-export const ShopeeAuthClientLive = ShopeeAuthClient.Live.pipe(
+export const ShopeeAuthClientLive = ShopeeAuthClient.Default.pipe(
   Layer.provide(ShopeeAPIConfigLayerLive),
-  Layer.provide(ShopeeTokenStorage.Live),
+  Layer.provide(ShopeeTokenStorage.Default),
 );
 
-export const ShopeeAPIClientLive = ShopeeAPIClient.Live.pipe(
+export const ShopeeAPIClientLive = ShopeeAPIClient.Default.pipe(
   Layer.provide(ShopeeAPIConfigLayerLive),
   Layer.provide(ShopeeAuthClientLive),
 );
@@ -47,12 +47,12 @@ const ShopifyAPIConfigLayerLive = createShopifyAPIConfigLayer({
   isEmbeddedApp: true,
 });
 
-const ShopifyAuthClientLive = ShopifyAuthClient.Live.pipe(
+const ShopifyAuthClientLive = ShopifyAuthClient.Default.pipe(
   Layer.provide(ShopifyAPIConfigLayerLive),
-  Layer.provide(ShopifySessionStorage.Live),
+  Layer.provide(ShopifySessionStorage.Default),
 );
 
-export const ShopifyAPIClientLive = ShopifyAPIClient.Live.pipe(
+export const ShopifyAPIClientLive = ShopifyAPIClient.Default.pipe(
   Layer.provide(ShopifyAPIConfigLayerLive),
   Layer.provide(ShopifyAuthClientLive),
 );
@@ -64,7 +64,7 @@ export const ShopifyAPIClientLive = ShopifyAPIClient.Live.pipe(
 const MainLayer = Layer.mergeAll(
   ShopeeAuthClientLive,
   ShopeeAPIClientLive,
-  ShopeeIntegration.Live,
+  ShopeeIntegration.Default,
 
   ShopifyAuthClientLive,
   ShopifyAPIClientLive,

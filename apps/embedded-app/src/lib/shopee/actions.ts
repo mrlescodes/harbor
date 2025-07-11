@@ -46,3 +46,37 @@ export const createMarketplaceProductMapping = async (mapping: {
 
   return RuntimeServer.runPromise(program);
 };
+
+// Exported function for external consumption (singular)
+export const createMarketplaceProductMappings = async (
+  mappings: {
+    shopifyProductId: string;
+    shopifyVariantId: string;
+    marketplaceProductId: number;
+    marketplaceVariantId?: number;
+  }[],
+) => {
+  const program = Effect.gen(function* () {
+    const client = yield* ShopeeIntegration;
+
+    const result = yield* client.createMarketplaceProductMappings(mappings);
+
+    return {
+      success: true as const,
+      result,
+    };
+  }).pipe(
+    Effect.catchAll((error) => {
+      console.error(
+        "Top-level error in createMarketplaceProductMapping:",
+        error,
+      );
+      return Effect.succeed({
+        success: false as const,
+        error: `Operation failed: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }),
+  );
+
+  return RuntimeServer.runPromise(program);
+};

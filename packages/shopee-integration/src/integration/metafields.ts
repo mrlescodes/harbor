@@ -1,5 +1,6 @@
 import { Effect } from "effect";
 
+import { MetafieldOwnerType } from "@harbor/shopify-api-client";
 import { ShopifyAPIClient } from "@harbor/shopify-api-client/api";
 
 const SHOPEE_METAFIELD_DEFINITIONS = [
@@ -10,7 +11,7 @@ const SHOPEE_METAFIELD_DEFINITIONS = [
     description:
       "Shopee marketplace order identifier for cross-platform order tracking",
     type: "id",
-    ownerType: "ORDER",
+    ownerType: MetafieldOwnerType.Order,
     pin: true,
   },
 ];

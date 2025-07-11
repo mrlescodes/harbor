@@ -21,6 +21,21 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
       return yield* Effect.fail(new Error(`No connection found`));
     }
 
+    const existingOrder = yield* shopifyAPIClient.findOrderByIdentifier(
+      connection.shopifyShop,
+      {
+        customId: {
+          namespace: "harbor",
+          key: "shopee_order_id",
+          value: payload.data.ordersn,
+        },
+      },
+    );
+
+    if (existingOrder.data?.orderByIdentifier?.id) {
+      return yield* Effect.fail(new Error("Order already exists"));
+    }
+
     const orderDetailResponse = yield* shopeeAPIClient.getOrderDetail(
       payload.shop_id,
       {
@@ -30,7 +45,6 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
 
     const orderDetail = orderDetailResponse.response.order_list[0];
 
-    // Typescript array guard
     if (!orderDetail) {
       return yield* Effect.fail(new Error("Order not found"));
     }
@@ -59,13 +73,13 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
     });
 
     const marketplaceProductMappingsResponse =
-      yield* shopeeIntegration.getMarketplaceProductMappings(items);
+      yield* shopeeIntegration.getMappingsByMarketplaceIds(items);
 
     // Build a Map for quick lookup using item_id + model_id combo as key
-    const mappingMap = new Map<string, string>( // string to shopifyVariantId
+    const mappingMap = new Map<string, string>(
       marketplaceProductMappingsResponse.map((m) => {
         const key = `${m.marketplaceProductId}:${m.marketplaceVariantId ?? "null"}`;
-        return [key, m.shopifyVariantId]; // shopifyVariantId is what Shopify expects
+        return [key, m.shopifyVariantId];
       }),
     );
 
@@ -128,19 +142,19 @@ const handleCancelled = (payload: OrderStatusPush) => {
     }
 
     // TODO: Magic string to const
-    const order = yield* shopifyAPIClient.findOrderByCustomId(
+    const order = yield* shopifyAPIClient.findOrderByIdentifier(
       connection.shopifyShop,
       {
-        namespace: "harbor",
-        key: "shopee_order_id",
-        value: payload.data.ordersn,
+        customId: {
+          namespace: "harbor",
+          key: "shopee_order_id",
+          value: payload.data.ordersn,
+        },
       },
     );
 
-    // TODO: Add type generation and remove this
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
     const orderId = order.data?.orderByIdentifier?.id;
-    if (!orderId || typeof orderId !== "string") {
+    if (!orderId) {
       return yield* Effect.fail(new Error("No order found"));
     }
 
@@ -166,28 +180,33 @@ const handleShipped = (payload: OrderStatusPush) => {
     }
 
     // TODO: Magic string to const
-    const order = yield* shopifyAPIClient.findOrderByCustomId(
+    const order = yield* shopifyAPIClient.findOrderByIdentifier(
       connection.shopifyShop,
       {
-        namespace: "harbor",
-        key: "shopee_order_id",
-        value: payload.data.ordersn,
+        customId: {
+          namespace: "harbor",
+          key: "shopee_order_id",
+          value: payload.data.ordersn,
+        },
       },
     );
 
-    // TODO: Add type generation and remove this
-    /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
     const fulfillmentOrderId =
-      order.data?.orderByIdentifier?.fulfillmentOrders?.edges[0].node.id;
-    /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
-    if (!fulfillmentOrderId || typeof fulfillmentOrderId !== "string") {
+      order.data?.orderByIdentifier?.fulfillmentOrders.edges[0]?.node.id;
+
+    if (!fulfillmentOrderId) {
       return yield* Effect.fail(new Error("No fullfilment order found"));
     }
 
-    yield* shopifyAPIClient.fulfillOrder(
-      connection.shopifyShop,
-      fulfillmentOrderId,
-    );
+    yield* shopifyAPIClient.createFulfillment(connection.shopifyShop, {
+      lineItemsByFulfillmentOrder: [
+        {
+          fulfillmentOrderId,
+          fulfillmentOrderLineItems: [],
+        },
+      ],
+      notifyCustomer: false,
+    });
 
     return {
       handler: `Handled Webhook: ${OrderStatus.SHIPPED}`,
