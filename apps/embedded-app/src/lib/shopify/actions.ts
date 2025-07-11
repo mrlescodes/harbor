@@ -143,7 +143,7 @@ export const getProductMappingData = async (shop: string, id: string) => {
     };
   }).pipe(
     Effect.catchAll((error) => {
-      console.error("Error in findProductById server action:", error);
+      // TODO: Logging
       return Effect.succeed({
         success: false as const,
         error:

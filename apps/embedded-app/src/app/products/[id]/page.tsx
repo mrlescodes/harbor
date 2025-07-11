@@ -70,7 +70,7 @@ export default function ProductPage() {
       const result = await createMarketplaceProductMapping(mapping);
 
       if (result.success) {
-        console.log("Success");
+        // TODO: UI Feedback
       }
     } else {
       const marketplaceProductId = formValues.marketplaceProductId;
@@ -98,7 +98,7 @@ export default function ProductPage() {
       const result = await createMarketplaceProductMappings(mappingsToSubmit);
 
       if (result.success) {
-        console.log("Success");
+        // TODO: UI Feedback
       }
     }
   };
