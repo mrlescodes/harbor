@@ -33,9 +33,7 @@ export async function GET(
 
   // Validate shop parameter exists
   if (!shop) {
-    console.error("Missing shop parameter");
-
-    // TODO: User friendly response
+    // TODO: User friendly response and logging
     return NextResponse.json(
       { error: "Shop parameter is required" },
       { status: 400 },
@@ -44,11 +42,7 @@ export async function GET(
 
   // Validate shop domain format
   if (!validateShopDomain(shop)) {
-    console.error(
-      `Invalid shop domain format: ${shop}. Must match *.myshopify.com`,
-    );
-
-    // TODO: User friendly response
+    // TODO: User friendly response and logging
     return NextResponse.json(
       { error: "Invalid shop domain. Must be a valid myshopify.com domain" },
       { status: 400 },
@@ -58,9 +52,7 @@ export async function GET(
   // Extract shop name safely
   const shopName = extractShopName(shop);
   if (!shopName) {
-    console.error(`Failed to extract shop name from: ${shop}`);
-
-    // TODO: User friendly response
+    // TODO: User friendly response and logging
     return NextResponse.json(
       { error: "Invalid shop domain format" },
       { status: 400 },
@@ -73,9 +65,7 @@ export async function GET(
 
   // Validate required parameters
   if (!code || !shopId) {
-    console.error("Missing required parameters: code or shop_id");
-
-    // TODO: Redirect with failed auth params
+    // TODO: Redirect with failed auth params and logging
     return NextResponse.redirect(
       `https://admin.shopify.com/store/${shopName}/apps/${env.NEXT_PUBLIC_SHOPIFY_API_KEY}`,
     );

@@ -35,11 +35,7 @@ export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
               },
             });
           },
-          catch: (error) => {
-            console.error(
-              "Database error storing Shopee API credentials:",
-              error,
-            );
+          catch: () => {
             return new Error(
               `Failed to store Shopee API credentials for shop ID ${shopId}`,
             );
@@ -55,11 +51,7 @@ export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
                 where: { shopId },
               });
             },
-            catch: (error) => {
-              console.error(
-                "Database error retrieving Shopee API credentials:",
-                error,
-              );
+            catch: () => {
               return new Error(
                 `Failed to retrieve Shopee API credentials for shop ID ${shopId}`,
               );

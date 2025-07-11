@@ -33,8 +33,7 @@ export class ShopifySessionStorage extends Effect.Service<ShopifySessionStorage>
               },
             });
           },
-          catch: (error) => {
-            console.error("Failed to store session:", error);
+          catch: () => {
             return new Error("Failed to store session");
           },
         });
@@ -48,8 +47,7 @@ export class ShopifySessionStorage extends Effect.Service<ShopifySessionStorage>
                 where: { sessionId },
               });
             },
-            catch: (error) => {
-              console.error("Failed to load session:", error);
+            catch: () => {
               return new Error("Failed to load session");
             },
           });

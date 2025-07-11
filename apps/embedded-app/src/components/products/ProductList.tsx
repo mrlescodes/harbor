@@ -23,7 +23,6 @@ export const ProductList = (props: ProductListProps) => {
       router.push(`/products/${parsedId}`);
     } else {
       // TODO: display ui error and log to service
-      console.warn(`Invalid product GID: ${productId}`);
     }
   };
 
