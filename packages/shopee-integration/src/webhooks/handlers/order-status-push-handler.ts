@@ -21,6 +21,21 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
       return yield* Effect.fail(new Error(`No connection found`));
     }
 
+    const existingOrder = yield* shopifyAPIClient.findOrderByIdentifier(
+      connection.shopifyShop,
+      {
+        customId: {
+          namespace: "harbor",
+          key: "shopee_order_id",
+          value: payload.data.ordersn,
+        },
+      },
+    );
+
+    if (existingOrder.data?.orderByIdentifier?.id) {
+      return yield* Effect.fail(new Error("Order already exists"));
+    }
+
     const orderDetailResponse = yield* shopeeAPIClient.getOrderDetail(
       payload.shop_id,
       {
