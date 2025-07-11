@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    "types": "./dist/index.d.ts",
+    "default": "./src/index.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -14,6 +15,9 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "effect": "catalog:"
   },
   "devDependencies": {
     "@harbor/eslint-config": "workspace:*",
