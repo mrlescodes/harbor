@@ -24,8 +24,8 @@ export const ShopeeConnectionButton = () => {
       const shopeeAuthUrl = await getShopeeAuthUrl(app.config.shop);
 
       open(shopeeAuthUrl, "_top");
-    } catch (error) {
-      console.error("Failed to connect with Shopee:", error);
+    } catch {
+      // TODO: UI Feedback
     } finally {
       setIsLoading(false);
     }

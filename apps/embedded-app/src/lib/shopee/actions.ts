@@ -67,10 +67,7 @@ export const createMarketplaceProductMappings = async (
     };
   }).pipe(
     Effect.catchAll((error) => {
-      console.error(
-        "Top-level error in createMarketplaceProductMapping:",
-        error,
-      );
+      // TODO: Logging
       return Effect.succeed({
         success: false as const,
         error: `Operation failed: ${error instanceof Error ? error.message : String(error)}`,

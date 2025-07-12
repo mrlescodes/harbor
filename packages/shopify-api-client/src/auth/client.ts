@@ -54,8 +54,7 @@ export class ShopifyAuthClient extends Effect.Service<ShopifyAuthClient>()(
                   : RequestedTokenType.OfflineAccessToken,
               });
             },
-            catch: (error) => {
-              console.error("Token exchange failed", error);
+            catch: () => {
               return new Error("Token exchange failed");
             },
           });
