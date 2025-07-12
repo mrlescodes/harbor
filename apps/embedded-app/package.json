@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@harbor/database": "workspace:*",
+    "@harbor/observability": "workspace:*",
     "@harbor/shared": "workspace:*",
     "@harbor/shopee-api-client": "workspace:*",
     "@harbor/shopee-integration": "workspace:*",
