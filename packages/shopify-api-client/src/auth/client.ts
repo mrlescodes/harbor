@@ -1,6 +1,10 @@
 import "@shopify/shopify-api/adapters/node";
 
-import { RequestedTokenType, shopifyApi } from "@shopify/shopify-api";
+import {
+  LogSeverity,
+  RequestedTokenType,
+  shopifyApi,
+} from "@shopify/shopify-api";
 import { Effect } from "effect";
 
 import { ShopifyAPIConfig } from "../config";
@@ -23,7 +27,7 @@ export class ShopifyAuthClient extends Effect.Service<ShopifyAuthClient>()(
         isEmbeddedApp,
       } = yield* config.getConfig;
 
-      // TODO: Extract and share across clients
+      // TODO: Extract and share across package and have environment based log level
       const shopify = shopifyApi({
         apiKey,
         apiSecretKey,
@@ -32,6 +36,9 @@ export class ShopifyAuthClient extends Effect.Service<ShopifyAuthClient>()(
         hostScheme,
         apiVersion,
         isEmbeddedApp,
+        logger: {
+          level: LogSeverity.Error,
+        },
       });
 
       const exchangeToken = ({

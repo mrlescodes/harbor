@@ -1,0 +1,34 @@
+{
+  "name": "@harbor/observability",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./sentry": {
+      "types": "./dist/sentry.d.ts",
+      "default": "./src/sentry.ts"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@sentry/node": "^9.38.0",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@harbor/eslint-config": "workspace:*",
+    "@harbor/prettier-config": "workspace:*",
+    "@harbor/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@harbor/prettier-config"
+}

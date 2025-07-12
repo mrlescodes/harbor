@@ -1,6 +1,7 @@
 import { LATEST_API_VERSION } from "@shopify/shopify-api";
-import { Layer, ManagedRuntime } from "effect";
+import { Layer, Logger, ManagedRuntime } from "effect";
 
+import { makeSentryLogger } from "@harbor/observability/sentry";
 import { ShopeeAPIClient } from "@harbor/shopee-api-client/api";
 import { ShopeeAuthClient } from "@harbor/shopee-api-client/auth";
 import { createShopeeAPIConfigLayer } from "@harbor/shopee-api-client/config";
@@ -12,6 +13,16 @@ import { createShopifyAPIConfigLayer } from "@harbor/shopify-api-client/config";
 import { ShopifySessionStorage } from "@harbor/shopify-api-client/session-storage";
 
 import { env } from "~/env";
+
+/**
+ * Observability
+ */
+
+const SentryLogger = makeSentryLogger({
+  dsn: env.SENTRY_DSN,
+});
+
+const SentryLoggerLayer = Logger.replace(Logger.defaultLogger, SentryLogger);
 
 /**
  * Shopee Services
@@ -68,6 +79,8 @@ const MainLayer = Layer.mergeAll(
 
   ShopifyAuthClientLive,
   ShopifyAPIClientLive,
+
+  SentryLoggerLayer,
 );
 
 export const RuntimeServer = ManagedRuntime.make(MainLayer);
