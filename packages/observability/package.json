@@ -4,7 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    "./sentry": {
+      "types": "./dist/sentry.d.ts",
+      "default": "./src/sentry.ts"
+    }
   },
   "license": "MIT",
   "scripts": {
@@ -14,6 +17,10 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@sentry/node": "^9.38.0",
+    "effect": "catalog:"
   },
   "devDependencies": {
     "@harbor/eslint-config": "workspace:*",
