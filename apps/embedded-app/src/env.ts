@@ -19,6 +19,8 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     DATABASE_ENCRYPTION_KEY: z.string().min(64).max(64),
 
+    SENTRY_DSN: z.string().url(),
+
     SHOPIFY_API_SECRET: z.string().min(1),
     SHOPIFY_ACCESS_SCOPES: z.string().min(1),
 

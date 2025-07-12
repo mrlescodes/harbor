@@ -1,6 +1,6 @@
 import "@shopify/shopify-api/adapters/node";
 
-import { shopifyApi } from "@shopify/shopify-api";
+import { LogSeverity, shopifyApi } from "@shopify/shopify-api";
 import { Effect } from "effect";
 
 import type {
@@ -40,7 +40,7 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
         isEmbeddedApp,
       } = yield* config.getConfig;
 
-      // TODO: Extract and share across package
+      // TODO: Extract and share across package and have environment based log level
       const shopify = shopifyApi({
         apiKey,
         apiSecretKey,
@@ -49,6 +49,9 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
         hostScheme,
         apiVersion,
         isEmbeddedApp,
+        logger: {
+          level: LogSeverity.Error,
+        },
       });
 
       const getGraphQLClient = (shop: string) => {
