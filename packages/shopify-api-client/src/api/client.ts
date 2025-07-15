@@ -13,6 +13,7 @@ import type {
 } from "../types";
 import { ShopifyAuthClient } from "../auth";
 import { ShopifyAPIConfig } from "../config";
+import { mapShopifyError } from "../errors";
 import {
   CREATE_FULFILLMENT,
   CREATE_METAFIELD_DEFINITION,
@@ -82,9 +83,7 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             try: () => {
               return client.request(CREATE_METAFIELD_DEFINITION, { variables });
             },
-            catch: () => {
-              return new Error("Failed to create metafield definition");
-            },
+            catch: mapShopifyError,
           });
 
           return response;
@@ -111,9 +110,7 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             try: () => {
               return client.request(CREATE_ORDER, { variables });
             },
-            catch: () => {
-              return new Error("Failed to create order");
-            },
+            catch: mapShopifyError,
           });
 
           return response;
@@ -135,9 +132,7 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             try: () => {
               return client.request(DELETE_ORDER, { variables });
             },
-            catch: () => {
-              return new Error("Failed to delete order");
-            },
+            catch: mapShopifyError,
           });
 
           return response;
@@ -162,9 +157,7 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             try: () => {
               return client.request(FIND_ORDER_BY_IDENTIFIER, { variables });
             },
-            catch: () => {
-              return new Error("Failed to find order by identifier");
-            },
+            catch: mapShopifyError,
           });
 
           return response;
@@ -191,9 +184,7 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             try: () => {
               return client.request(CREATE_FULFILLMENT, { variables });
             },
-            catch: () => {
-              return new Error("Failed to create fullfilment");
-            },
+            catch: mapShopifyError,
           });
 
           return response;
@@ -220,9 +211,7 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             try: () => {
               return client.request(GET_PRODUCTS, { variables });
             },
-            catch: () => {
-              return new Error("Failed to get products");
-            },
+            catch: mapShopifyError,
           });
 
           return response;
@@ -247,9 +236,7 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             try: () => {
               return client.request(FIND_PRODUCT_BY_IDENTIFIER, { variables });
             },
-            catch: () => {
-              return new Error("Failed to find product by identifier");
-            },
+            catch: mapShopifyError,
           });
 
           return response;
