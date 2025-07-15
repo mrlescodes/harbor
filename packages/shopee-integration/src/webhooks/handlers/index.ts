@@ -1,12 +1,8 @@
-import { Data, Effect } from "effect";
+import { Effect } from "effect";
 
 import type { ShopeeWebhook } from "../schema";
 import { isOrderStatusPush, validateShopeeWebhook } from "../schema";
 import { processOrderStatusPush } from "./order-status-push-handler";
-
-export class WebhookError extends Data.TaggedError("WebhookError")<{
-  message: string;
-}> {}
 
 const processWebhook = (payload: ShopeeWebhook) => {
   return Effect.gen(function* () {
@@ -14,9 +10,10 @@ const processWebhook = (payload: ShopeeWebhook) => {
       return yield* processOrderStatusPush(payload);
     }
 
-    return yield* new WebhookError({
+    return {
+      success: false,
       message: `Unsupported push notification code: ${payload.code}`,
-    });
+    };
   });
 };
 

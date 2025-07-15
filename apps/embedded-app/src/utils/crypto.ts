@@ -30,6 +30,7 @@ export const decrypt = (text: string) => {
   const [ivHex, encryptedHex] = text.split(":");
 
   if (!ivHex || !encryptedHex) {
+    // TODO: Add domain error
     throw new Error("Invalid encrypted text format");
   }
 

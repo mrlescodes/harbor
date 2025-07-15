@@ -1,7 +1,8 @@
 import { Effect } from "effect";
 
-import { PrismaClient } from "@harbor/database";
+import { mapPrismaErrorToDatabaseError, PrismaClient } from "@harbor/database";
 
+import { ShopeeCredentialsNotFoundError } from "./errors";
 import { calculateExpiryDate } from "./utils";
 
 export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
@@ -35,41 +36,29 @@ export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
               },
             });
           },
-          catch: () => {
-            return new Error(
-              `Failed to store Shopee API credentials for shop ID ${shopId}`,
-            );
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
       const getToken = (shopId: number) => {
         return Effect.gen(function* () {
-          const connection = yield* Effect.tryPromise({
+          const credentials = yield* Effect.tryPromise({
             try: () => {
               return prisma.shopeeApiCredentials.findUnique({
                 where: { shopId },
               });
             },
-            catch: () => {
-              return new Error(
-                `Failed to retrieve Shopee API credentials for shop ID ${shopId}`,
-              );
-            },
+            catch: mapPrismaErrorToDatabaseError,
           });
 
-          if (!connection) {
-            return yield* Effect.fail(
-              new Error(
-                `No Shopee API credentials found for shop ID ${shopId}`,
-              ),
-            );
+          if (!credentials) {
+            return yield* new ShopeeCredentialsNotFoundError({ shopId });
           }
 
           return {
-            accessToken: connection.accessToken,
-            refreshToken: connection.refreshToken,
-            expiresAt: connection.expiresAt,
+            accessToken: credentials.accessToken,
+            refreshToken: credentials.refreshToken,
+            expiresAt: credentials.expiresAt,
           };
         });
       };

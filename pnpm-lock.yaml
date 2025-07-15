@@ -329,6 +329,9 @@ importers:
       '@harbor/database':
         specifier: workspace:*
         version: link:../database
+      '@harbor/shared':
+        specifier: workspace:^
+        version: link:../shared
       '@shopify/shopify-api':
         specifier: ^11.12.0
         version: 11.13.0
