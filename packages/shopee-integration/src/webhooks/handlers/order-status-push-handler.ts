@@ -123,6 +123,7 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
     yield* shopifyAPIClient.createOrder(connection.shopifyShop, shopifyOrder);
 
     return {
+      success: true,
       handler: `Handled Webhook: ${OrderStatus.READY_TO_SHIP}`,
     };
   });
@@ -161,6 +162,7 @@ const handleCancelled = (payload: OrderStatusPush) => {
     yield* shopifyAPIClient.deleteOrder(connection.shopifyShop, orderId);
 
     return {
+      success: true,
       handler: `Handled Webhook: ${OrderStatus.CANCELLED}`,
     };
   });
@@ -209,6 +211,7 @@ const handleShipped = (payload: OrderStatusPush) => {
     });
 
     return {
+      success: true,
       handler: `Handled Webhook: ${OrderStatus.SHIPPED}`,
     };
   });
@@ -228,6 +231,9 @@ export const processOrderStatusPush = (payload: OrderStatusPush) => {
       return yield* handleShipped(payload);
     }
 
-    return yield* Effect.fail(new Error("Unsupported status"));
+    return {
+      success: false,
+      message: `Unsupported Order Push Status: ${payload.data.status}`,
+    };
   });
 };
