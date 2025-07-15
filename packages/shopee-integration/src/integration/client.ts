@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 
-import { PrismaClient } from "@harbor/database";
+import { mapPrismaErrorToDatabaseError, PrismaClient } from "@harbor/database";
 
 export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
   "ShopeeIntegration",
@@ -19,11 +19,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: () => {
-            return new Error(
-              `Failed to create connection for Shopee shop ${shopeeShopId} and Shopify shop ${shopifyShop}`,
-            );
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -40,11 +36,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: () => {
-            return new Error(
-              `Failed to retrieve Shopify shop for Shopee ID: ${shopeeShopId}`,
-            );
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -57,11 +49,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: () => {
-            return new Error(
-              `Failed to retrieve connection for Shopee ID: ${shopeeShopId}`,
-            );
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -74,11 +62,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: () => {
-            return new Error(
-              `Failed to retrieve connection for Shopify shop: ${shopifyShop}`,
-            );
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -89,8 +73,8 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
         marketplaceVariantId?: number;
       }) => {
         return Effect.tryPromise({
-          try: () =>
-            prisma.marketplaceProductMapping.upsert({
+          try: () => {
+            return prisma.marketplaceProductMapping.upsert({
               where: {
                 shopifyProductId_shopifyVariantId: {
                   shopifyProductId: mapping.shopifyProductId,
@@ -107,12 +91,9 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
                 marketplaceProductId: mapping.marketplaceProductId,
                 marketplaceVariantId: mapping.marketplaceVariantId,
               },
-            }),
-          catch: () => {
-            return new Error(
-              `Failed to create mapping for Shopify Product ${mapping.shopifyProductId} and Shopee Product ${mapping.marketplaceProductId}`,
-            );
+            });
           },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -147,9 +128,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
 
         return Effect.tryPromise({
           try: () => prisma.$transaction(upsertPromises),
-          catch: () => {
-            return new Error("Failed to create mappings");
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -174,11 +153,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: () => {
-            return new Error(
-              `Failed to retrieve marketplace mappings for ${products.length} items`,
-            );
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -199,11 +174,7 @@ export class ShopeeIntegration extends Effect.Service<ShopeeIntegration>()(
               },
             });
           },
-          catch: () => {
-            return new Error(
-              `Failed to retrieve marketplace mappings for ${products.length} items`,
-            );
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 

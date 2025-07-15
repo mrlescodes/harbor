@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 
-import { PrismaClient } from "@harbor/database";
+import { mapPrismaErrorToDatabaseError, PrismaClient } from "@harbor/database";
 
 import { calculateExpiryDate } from "./utils";
 
@@ -35,11 +35,7 @@ export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
               },
             });
           },
-          catch: () => {
-            return new Error(
-              `Failed to store Shopee API credentials for shop ID ${shopId}`,
-            );
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -51,14 +47,11 @@ export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
                 where: { shopId },
               });
             },
-            catch: () => {
-              return new Error(
-                `Failed to retrieve Shopee API credentials for shop ID ${shopId}`,
-              );
-            },
+            catch: mapPrismaErrorToDatabaseError,
           });
 
           if (!connection) {
+            // TODO: Add domain errpr
             return yield* Effect.fail(
               new Error(
                 `No Shopee API credentials found for shop ID ${shopId}`,
