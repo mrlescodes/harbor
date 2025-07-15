@@ -8,6 +8,12 @@ import {
 import { Effect } from "effect";
 
 import { ShopifyAPIConfig } from "../config";
+import {
+  ShopifyAccessTokenMissingError,
+  ShopifySessionExpiredError,
+  ShopifySessionNotFoundError,
+  ShopifyTokenExchangeError,
+} from "../errors";
 import { ShopifySessionStorage } from "../session-storage";
 
 export class ShopifyAuthClient extends Effect.Service<ShopifyAuthClient>()(
@@ -62,7 +68,7 @@ export class ShopifyAuthClient extends Effect.Service<ShopifyAuthClient>()(
               });
             },
             catch: () => {
-              return new Error("Token exchange failed");
+              return new ShopifyTokenExchangeError({ shop });
             },
           });
 
@@ -76,18 +82,16 @@ export class ShopifyAuthClient extends Effect.Service<ShopifyAuthClient>()(
           const session = yield* sessionStorage.loadSession(sessionId);
 
           if (!session) {
-            return yield* Effect.fail(new Error("No session found for shop"));
+            return yield* new ShopifySessionNotFoundError({ shop });
           }
 
-          // TODO: Use is expired from shared utils pacakge
+          // TODO: Use is expired from shared utils package or create schema with util method
           if (session.expires && session.expires < new Date()) {
-            return yield* Effect.fail(new Error("Session expired for shop"));
+            return yield* new ShopifySessionExpiredError({ shop });
           }
 
           if (!session.accessToken) {
-            return yield* Effect.fail(
-              new Error("No access token found for shop"),
-            );
+            return yield* new ShopifyAccessTokenMissingError({ shop });
           }
 
           return session;
