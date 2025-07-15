@@ -2,6 +2,7 @@ import { Effect } from "effect";
 
 import { mapPrismaErrorToDatabaseError, PrismaClient } from "@harbor/database";
 
+import { ShopeeCredentialsNotFoundError } from "./errors";
 import { calculateExpiryDate } from "./utils";
 
 export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
@@ -41,7 +42,7 @@ export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
 
       const getToken = (shopId: number) => {
         return Effect.gen(function* () {
-          const connection = yield* Effect.tryPromise({
+          const credentials = yield* Effect.tryPromise({
             try: () => {
               return prisma.shopeeApiCredentials.findUnique({
                 where: { shopId },
@@ -50,19 +51,14 @@ export class ShopeeTokenStorage extends Effect.Service<ShopeeTokenStorage>()(
             catch: mapPrismaErrorToDatabaseError,
           });
 
-          if (!connection) {
-            // TODO: Add domain errpr
-            return yield* Effect.fail(
-              new Error(
-                `No Shopee API credentials found for shop ID ${shopId}`,
-              ),
-            );
+          if (!credentials) {
+            return yield* new ShopeeCredentialsNotFoundError({ shopId });
           }
 
           return {
-            accessToken: connection.accessToken,
-            refreshToken: connection.refreshToken,
-            expiresAt: connection.expiresAt,
+            accessToken: credentials.accessToken,
+            refreshToken: credentials.refreshToken,
+            expiresAt: credentials.expiresAt,
           };
         });
       };
