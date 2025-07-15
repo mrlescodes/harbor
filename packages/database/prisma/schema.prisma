@@ -54,7 +54,6 @@ model ShopeeConnection {
   updatedAt DateTime @updatedAt
 }
 
-// TODO: Should we add the SKU?
 model MarketplaceProductMapping {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 

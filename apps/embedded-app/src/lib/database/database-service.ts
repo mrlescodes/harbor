@@ -1,6 +1,7 @@
 import { prisma } from "@harbor/database";
 
 // TODO: Change to domain package
+// TODO: Handle errors
 
 const initialiseStore = async (shop: string) => {
   return prisma.shopifyStore.upsert({

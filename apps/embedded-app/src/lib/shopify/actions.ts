@@ -79,6 +79,7 @@ export const getProductMappingData = async (shop: string, id: string) => {
 
     if (!shopifyProduct) {
       return yield* Effect.fail(
+        // TODO: Replace with domain error
         new Error("Shopify product not found or missing ID."),
       );
     }
