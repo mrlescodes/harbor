@@ -5,6 +5,7 @@ import { ShopifyAPIClient } from "@harbor/shopify-api-client/api";
 
 import type { OrderStatusPush } from "../schema";
 import { ShopeeIntegration } from "../../integration";
+import { ShopeeWebhookError } from "../errors";
 import { buildShopifyOrder } from "../transformers/build-shopify-order";
 
 const handleReadyToShip = (payload: OrderStatusPush) => {
@@ -18,7 +19,9 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
     );
 
     if (!connection) {
-      return yield* Effect.fail(new Error(`No connection found`));
+      return yield* new ShopeeWebhookError({
+        message: `No connection found for Shopee shop: ${payload.shop_id}`,
+      });
     }
 
     const existingOrder = yield* shopifyAPIClient.findOrderByIdentifier(
@@ -33,7 +36,9 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
     );
 
     if (existingOrder.data?.orderByIdentifier?.id) {
-      return yield* Effect.fail(new Error("Order already exists"));
+      return yield* new ShopeeWebhookError({
+        message: `Order already exists: ${payload.data.ordersn}`,
+      });
     }
 
     const orderDetailResponse = yield* shopeeAPIClient.getOrderDetail(
@@ -44,9 +49,10 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
     );
 
     const orderDetail = orderDetailResponse.response.order_list[0];
-
     if (!orderDetail) {
-      return yield* Effect.fail(new Error("Order not found"));
+      return yield* new ShopeeWebhookError({
+        message: `No order found for Shopee order: ${payload.data.ordersn}`,
+      });
     }
 
     const escrowDetailResponse = yield* shopeeAPIClient.getEscrowDetail(
@@ -123,6 +129,7 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
     yield* shopifyAPIClient.createOrder(connection.shopifyShop, shopifyOrder);
 
     return {
+      success: true,
       handler: `Handled Webhook: ${OrderStatus.READY_TO_SHIP}`,
     };
   });
@@ -138,7 +145,9 @@ const handleCancelled = (payload: OrderStatusPush) => {
     );
 
     if (!connection) {
-      return yield* Effect.fail(new Error(`No connection found`));
+      return yield* new ShopeeWebhookError({
+        message: `No connection found for Shopee shop: ${payload.shop_id}`,
+      });
     }
 
     // TODO: Magic string to const
@@ -155,12 +164,15 @@ const handleCancelled = (payload: OrderStatusPush) => {
 
     const orderId = order.data?.orderByIdentifier?.id;
     if (!orderId) {
-      return yield* Effect.fail(new Error("No order found"));
+      return yield* new ShopeeWebhookError({
+        message: `No order found for Shopee order: ${payload.data.ordersn}`,
+      });
     }
 
     yield* shopifyAPIClient.deleteOrder(connection.shopifyShop, orderId);
 
     return {
+      success: true,
       handler: `Handled Webhook: ${OrderStatus.CANCELLED}`,
     };
   });
@@ -176,7 +188,9 @@ const handleShipped = (payload: OrderStatusPush) => {
     );
 
     if (!connection) {
-      return yield* Effect.fail(new Error(`No connection found`));
+      return yield* new ShopeeWebhookError({
+        message: `No connection found for Shopee shop: ${payload.shop_id}`,
+      });
     }
 
     // TODO: Magic string to const
@@ -193,9 +207,10 @@ const handleShipped = (payload: OrderStatusPush) => {
 
     const fulfillmentOrderId =
       order.data?.orderByIdentifier?.fulfillmentOrders.edges[0]?.node.id;
-
     if (!fulfillmentOrderId) {
-      return yield* Effect.fail(new Error("No fullfilment order found"));
+      return yield* new ShopeeWebhookError({
+        message: `No fulfillment order found for Shopee order: ${payload.data.ordersn}`,
+      });
     }
 
     yield* shopifyAPIClient.createFulfillment(connection.shopifyShop, {
@@ -209,6 +224,7 @@ const handleShipped = (payload: OrderStatusPush) => {
     });
 
     return {
+      success: true,
       handler: `Handled Webhook: ${OrderStatus.SHIPPED}`,
     };
   });
@@ -228,6 +244,9 @@ export const processOrderStatusPush = (payload: OrderStatusPush) => {
       return yield* handleShipped(payload);
     }
 
-    return yield* Effect.fail(new Error("Unsupported status"));
+    return {
+      success: false,
+      message: `Unsupported Order Push Status: ${payload.data.status}`,
+    };
   });
 };
