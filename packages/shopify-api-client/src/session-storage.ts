@@ -1,7 +1,7 @@
 import { Session } from "@shopify/shopify-api";
 import { Effect } from "effect";
 
-import { PrismaClient } from "@harbor/database";
+import { mapPrismaErrorToDatabaseError, PrismaClient } from "@harbor/database";
 
 export class ShopifySessionStorage extends Effect.Service<ShopifySessionStorage>()(
   "ShopifySessionStorage",
@@ -33,9 +33,7 @@ export class ShopifySessionStorage extends Effect.Service<ShopifySessionStorage>
               },
             });
           },
-          catch: () => {
-            return new Error("Failed to store session");
-          },
+          catch: mapPrismaErrorToDatabaseError,
         });
       };
 
@@ -47,9 +45,7 @@ export class ShopifySessionStorage extends Effect.Service<ShopifySessionStorage>
                 where: { sessionId },
               });
             },
-            catch: () => {
-              return new Error("Failed to load session");
-            },
+            catch: mapPrismaErrorToDatabaseError,
           });
 
           if (!sessionData) {
