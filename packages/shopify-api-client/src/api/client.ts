@@ -3,6 +3,8 @@ import "@shopify/shopify-api/adapters/node";
 import { LogSeverity, shopifyApi } from "@shopify/shopify-api";
 import { Effect } from "effect";
 
+import { messageFromUnknown } from "@harbor/shared";
+
 import type {
   FulfillmentInput,
   MetafieldDefinitionInput,
@@ -13,7 +15,11 @@ import type {
 } from "../types";
 import { ShopifyAuthClient } from "../auth";
 import { ShopifyAPIConfig } from "../config";
-import { mapShopifyError } from "../errors";
+import {
+  mapShopifyError,
+  ShopifyResponseError,
+  ShopifyUserError,
+} from "../errors";
 import {
   CREATE_FULFILLMENT,
   CREATE_METAFIELD_DEFINITION,
@@ -86,7 +92,26 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             catch: mapShopifyError,
           });
 
-          return response;
+          if (response.errors) {
+            return yield* new ShopifyResponseError({
+              message: messageFromUnknown(response.errors),
+              cause: response.errors,
+            });
+          }
+
+          const result = response.data?.metafieldDefinitionCreate;
+
+          if (!result) {
+            return null;
+          }
+
+          if (result.userErrors.length > 0) {
+            return yield* new ShopifyUserError({
+              errors: result.userErrors,
+            });
+          }
+
+          return result.createdDefinition?.id;
         });
       };
 
@@ -113,7 +138,26 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             catch: mapShopifyError,
           });
 
-          return response;
+          if (response.errors) {
+            return yield* new ShopifyResponseError({
+              message: messageFromUnknown(response.errors),
+              cause: response.errors,
+            });
+          }
+
+          const result = response.data?.orderCreate;
+
+          if (!result) {
+            return null;
+          }
+
+          if (result.userErrors.length > 0) {
+            return yield* new ShopifyUserError({
+              errors: result.userErrors,
+            });
+          }
+
+          return result.order?.id;
         });
       };
 
@@ -135,7 +179,26 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             catch: mapShopifyError,
           });
 
-          return response;
+          if (response.errors) {
+            return yield* new ShopifyResponseError({
+              message: messageFromUnknown(response.errors),
+              cause: response.errors,
+            });
+          }
+
+          const result = response.data?.orderDelete;
+
+          if (!result) {
+            return null;
+          }
+
+          if (result.userErrors.length > 0) {
+            return yield* new ShopifyUserError({
+              errors: result.userErrors,
+            });
+          }
+
+          return result.deletedId;
         });
       };
 
@@ -160,7 +223,25 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             catch: mapShopifyError,
           });
 
-          return response;
+          if (response.errors) {
+            return yield* new ShopifyResponseError({
+              message: messageFromUnknown(response.errors),
+              cause: response.errors,
+            });
+          }
+
+          const result = response.data?.orderByIdentifier;
+
+          if (!result) {
+            return null;
+          }
+
+          return {
+            ...result,
+            fulfillmentOrders: result.fulfillmentOrders.edges.map((edge) => ({
+              ...edge.node,
+            })),
+          };
         });
       };
 
@@ -187,7 +268,26 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             catch: mapShopifyError,
           });
 
-          return response;
+          if (response.errors) {
+            return yield* new ShopifyResponseError({
+              message: messageFromUnknown(response.errors),
+              cause: response.errors,
+            });
+          }
+
+          const result = response.data?.fulfillmentCreate;
+
+          if (!result) {
+            return null;
+          }
+
+          if (result.userErrors.length > 0) {
+            return yield* new ShopifyUserError({
+              errors: result.userErrors,
+            });
+          }
+
+          return result.fulfillment?.id;
         });
       };
 
@@ -214,7 +314,25 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             catch: mapShopifyError,
           });
 
-          return response;
+          if (response.errors) {
+            return yield* new ShopifyResponseError({
+              message: messageFromUnknown(response.errors),
+              cause: response.errors,
+            });
+          }
+
+          const result = response.data?.products.nodes;
+
+          if (!result) {
+            return [];
+          }
+
+          return result.map((productNode) => ({
+            ...productNode,
+            variants: productNode.variants.nodes.map((variantNode) => ({
+              ...variantNode,
+            })),
+          }));
         });
       };
 
@@ -239,7 +357,25 @@ export class ShopifyAPIClient extends Effect.Service<ShopifyAPIClient>()(
             catch: mapShopifyError,
           });
 
-          return response;
+          if (response.errors) {
+            return yield* new ShopifyResponseError({
+              message: messageFromUnknown(response.errors),
+              cause: response.errors,
+            });
+          }
+
+          const result = response.data?.productByIdentifier;
+
+          if (!result) {
+            return null;
+          }
+
+          return {
+            ...result,
+            variants: result.variants.edges.map((edge) => ({
+              ...edge.node,
+            })),
+          };
         });
       };
 
