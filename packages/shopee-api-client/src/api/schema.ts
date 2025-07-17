@@ -1,5 +1,7 @@
 import { Schema } from "effect";
 
+import { ErrorResponse } from "../schema";
+
 /**
  * @see https://open.shopee.com/developer-guide/229
  */
@@ -21,10 +23,11 @@ export enum CurrencyCode {
   Idr = "IDR",
 }
 
-export const GetOrderListResponse = Schema.Struct({
-  request_id: Schema.String,
-  error: Schema.String,
-  message: Schema.String,
+/**
+ * Get Order List Response
+ */
+
+export const GetOrderListSuccessResponse = Schema.Struct({
   response: Schema.Struct({
     more: Schema.Boolean,
     order_list: Schema.Array(
@@ -37,9 +40,18 @@ export const GetOrderListResponse = Schema.Struct({
   }),
 });
 
+export const GetOrderListResponse = Schema.Union(
+  ErrorResponse,
+  GetOrderListSuccessResponse,
+);
+
 export type GetOrderListResponse = Schema.Schema.Type<
   typeof GetOrderListResponse
 >;
+
+/**
+ * Get Order Detail Response
+ */
 
 export const OrderDetail = Schema.Struct({
   order_sn: Schema.String,
@@ -64,19 +76,24 @@ export const OrderDetail = Schema.Struct({
 
 export type OrderDetail = Schema.Schema.Type<typeof OrderDetail>;
 
-export const GetOrderDetailResponse = Schema.Struct({
-  request_id: Schema.String,
-  error: Schema.String,
-  message: Schema.String,
+export const GetOrderDetailSuccessResponse = Schema.Struct({
   response: Schema.Struct({
     order_list: Schema.Array(OrderDetail),
   }),
-  warning: Schema.optional(Schema.String),
 });
+
+export const GetOrderDetailResponse = Schema.Union(
+  ErrorResponse,
+  GetOrderDetailSuccessResponse,
+);
 
 export type GetOrderDetailResponse = Schema.Schema.Type<
   typeof GetOrderDetailResponse
 >;
+
+/**
+ * Get Escrow Detail Response
+ */
 
 export const OrderIncome = Schema.Struct({
   order_selling_price: Schema.Number,
@@ -89,14 +106,16 @@ export const OrderIncome = Schema.Struct({
 
 export type OrderIncome = Schema.Schema.Type<typeof OrderIncome>;
 
-export const GetEscrowDetailResponse = Schema.Struct({
-  request_id: Schema.String,
-  error: Schema.String,
-  message: Schema.String,
+export const GetEscrowDetailSuccessResponse = Schema.Struct({
   response: Schema.Struct({
     order_income: OrderIncome,
   }),
 });
+
+export const GetEscrowDetailResponse = Schema.Union(
+  ErrorResponse,
+  GetEscrowDetailSuccessResponse,
+);
 
 export type GetEscrowDetailResponse = Schema.Schema.Type<
   typeof GetEscrowDetailResponse

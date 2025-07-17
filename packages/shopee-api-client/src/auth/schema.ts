@@ -1,28 +1,42 @@
 import { Schema } from "effect";
 
-export const GetAccessTokenResponse = Schema.Struct({
+import { ErrorResponse } from "../schema";
+
+/**
+ * Get Access Token Response
+ */
+
+export const GetAccessTokenSuccessResponse = Schema.Struct({
   refresh_token: Schema.String,
   access_token: Schema.String,
   expire_in: Schema.Int,
-  request_id: Schema.String,
-  error: Schema.optional(Schema.String),
-  message: Schema.optional(Schema.String),
 });
+
+export const GetAccessTokenResponse = Schema.Union(
+  ErrorResponse,
+  GetAccessTokenSuccessResponse,
+);
 
 export type GetAccessTokenResponse = Schema.Schema.Type<
   typeof GetAccessTokenResponse
 >;
 
-export const RefreshAccessTokenResponse = Schema.Struct({
+/**
+ * Refresh Access Token Response
+ */
+
+export const RefreshAccessTokenSuccessResponse = Schema.Struct({
   partner_id: Schema.Int,
   refresh_token: Schema.String,
   access_token: Schema.String,
   expire_in: Schema.Int,
-  request_id: Schema.String,
-  error: Schema.optional(Schema.String),
-  message: Schema.optional(Schema.String),
   shop_id: Schema.Int,
 });
+
+export const RefreshAccessTokenResponse = Schema.Union(
+  ErrorResponse,
+  RefreshAccessTokenSuccessResponse,
+);
 
 export type RefreshAccessTokenResponse = Schema.Schema.Type<
   typeof RefreshAccessTokenResponse
