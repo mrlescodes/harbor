@@ -65,6 +65,9 @@
     "db:deploy": {
       "cache": false
     },
+    "generate-types": {
+      "cache": false
+    },
     "generate-app-config": {
       "cache": false
     },
