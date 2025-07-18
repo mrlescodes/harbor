@@ -71,11 +71,10 @@ export const getProductMappingData = async (shop: string, id: string) => {
     const gid = `gid://shopify/Product/${id}`;
 
     // 1. Fetch product details from Shopify
-    const shopifyResult = yield* shopifyAPIClient.findProductByIdentifier(
+    const shopifyProduct = yield* shopifyAPIClient.findProductByIdentifier(
       shop,
       { id: gid },
     );
-    const shopifyProduct = shopifyResult.data?.productByIdentifier;
 
     if (!shopifyProduct) {
       return yield* Effect.fail(
@@ -97,7 +96,7 @@ export const getProductMappingData = async (shop: string, id: string) => {
         : null;
 
     // 4. Transform and merge data
-    const variants = shopifyProduct.variants.edges.map(({ node: variant }) => {
+    const variants = shopifyProduct.variants.map((variant) => {
       // Find existing mapping for this variant
       const existingMapping = marketplaceMappings.find(
         (mapping) => mapping.shopifyVariantId === variant.id,

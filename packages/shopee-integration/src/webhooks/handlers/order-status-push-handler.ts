@@ -35,7 +35,7 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
       },
     );
 
-    if (existingOrder.data?.orderByIdentifier?.id) {
+    if (existingOrder) {
       return yield* new ShopeeWebhookError({
         message: `Order already exists: ${payload.data.ordersn}`,
       });
@@ -48,7 +48,7 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
       },
     );
 
-    const orderDetail = orderDetailResponse.response.order_list[0];
+    const orderDetail = orderDetailResponse.order_list[0];
     if (!orderDetail) {
       return yield* new ShopeeWebhookError({
         message: `No order found for Shopee order: ${payload.data.ordersn}`,
@@ -62,7 +62,7 @@ const handleReadyToShip = (payload: OrderStatusPush) => {
       },
     );
 
-    const orderIncome = escrowDetailResponse.response.order_income;
+    const orderIncome = escrowDetailResponse.order_income;
 
     /**
      * Prepare Line items
@@ -162,14 +162,13 @@ const handleCancelled = (payload: OrderStatusPush) => {
       },
     );
 
-    const orderId = order.data?.orderByIdentifier?.id;
-    if (!orderId) {
+    if (!order) {
       return yield* new ShopeeWebhookError({
         message: `No order found for Shopee order: ${payload.data.ordersn}`,
       });
     }
 
-    yield* shopifyAPIClient.deleteOrder(connection.shopifyShop, orderId);
+    yield* shopifyAPIClient.deleteOrder(connection.shopifyShop, order.id);
 
     return {
       success: true,
@@ -205,8 +204,7 @@ const handleShipped = (payload: OrderStatusPush) => {
       },
     );
 
-    const fulfillmentOrderId =
-      order.data?.orderByIdentifier?.fulfillmentOrders.edges[0]?.node.id;
+    const fulfillmentOrderId = order?.fulfillmentOrders[0]?.id;
     if (!fulfillmentOrderId) {
       return yield* new ShopeeWebhookError({
         message: `No fulfillment order found for Shopee order: ${payload.data.ordersn}`,

@@ -26,8 +26,7 @@ export default function Products() {
 
         if (result.success) {
           // TODO: Response type generation
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-          setProducts(result.products.data?.products?.nodes);
+          setProducts(result.products);
         } else {
           setError(result.error || "Failed to load products");
         }

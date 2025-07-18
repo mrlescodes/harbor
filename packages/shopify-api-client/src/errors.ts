@@ -53,6 +53,21 @@ export class ShopifyResponseError extends Data.TaggedError(
   cause?: unknown;
 }> {}
 
+export class ShopifyUserError extends Data.TaggedError("ShopifyUserError")<{
+  errors: {
+    message: string;
+    field?: string[] | null;
+  }[];
+}> {
+  get message() {
+    if (this.errors.length > 0) {
+      return this.errors.map((e) => e.message).join(" ");
+    }
+
+    return "An unknown user error occurred";
+  }
+}
+
 export const mapShopifyError = (error: unknown) => {
   return new ShopifyResponseError({
     message: messageFromUnknown(error),

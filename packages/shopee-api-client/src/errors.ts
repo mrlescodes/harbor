@@ -10,3 +10,13 @@ export class ShopeeCredentialsNotFoundError extends Data.TaggedError(
     return `Shopee API credentials not found for Shopee shop: ${this.shopId}`;
   }
 }
+
+export class ShopeeResponseError extends Data.TaggedError(
+  "ShopeeResponseError",
+)<{
+  shopId: number;
+  apiPath: string;
+  requestId: string;
+  error: string;
+  message: string;
+}> {}
