@@ -9,6 +9,8 @@ import { Effect } from "effect";
 
 import { ShopeeAuthClient } from "../auth";
 import { ShopeeAPIConfig } from "../config";
+import { ShopeeResponseError } from "../errors";
+import { isErrorResponse } from "../schema";
 import { generateSignature, getCurrentTimestamp } from "../utils";
 import {
   GetEscrowDetailResponse,
@@ -100,7 +102,7 @@ export class ShopeeAPIClient extends Effect.Service<ShopeeAPIClient>()(
 
         const responseOptionalFields = ["order_status"];
 
-        const additionalParams: Record<string, string> = {
+        const additionalParams = {
           time_range_field: timeRangeField,
           time_from: timeFrom.toString(),
           time_to: timeTo.toString(),
@@ -120,9 +122,24 @@ export class ShopeeAPIClient extends Effect.Service<ShopeeAPIClient>()(
           const req = HttpClientRequest.get(apiPath);
           const response = yield* client.execute(req);
 
-          return yield* HttpClientResponse.schemaBodyJson(GetOrderListResponse)(
-            response,
-          );
+          const parsedResponse =
+            yield* HttpClientResponse.schemaBodyJson(GetOrderListResponse)(
+              response,
+            );
+
+          if (isErrorResponse(parsedResponse)) {
+            return yield* Effect.fail(
+              new ShopeeResponseError({
+                shopId,
+                apiPath,
+                requestId: parsedResponse.request_id,
+                error: parsedResponse.error,
+                message: parsedResponse.message,
+              }),
+            );
+          }
+
+          return parsedResponse.response;
         }).pipe(Effect.scoped);
       };
 
@@ -161,9 +178,23 @@ export class ShopeeAPIClient extends Effect.Service<ShopeeAPIClient>()(
           const req = HttpClientRequest.get(apiPath);
           const response = yield* client.execute(req);
 
-          return yield* HttpClientResponse.schemaBodyJson(
+          const parsedResponse = yield* HttpClientResponse.schemaBodyJson(
             GetOrderDetailResponse,
           )(response);
+
+          if (isErrorResponse(parsedResponse)) {
+            return yield* Effect.fail(
+              new ShopeeResponseError({
+                shopId,
+                apiPath,
+                requestId: parsedResponse.request_id,
+                error: parsedResponse.error,
+                message: parsedResponse.message,
+              }),
+            );
+          }
+
+          return parsedResponse.response;
         }).pipe(Effect.scoped);
       };
 
@@ -192,9 +223,23 @@ export class ShopeeAPIClient extends Effect.Service<ShopeeAPIClient>()(
           const req = HttpClientRequest.get(apiPath);
           const response = yield* client.execute(req);
 
-          return yield* HttpClientResponse.schemaBodyJson(
+          const parsedResponse = yield* HttpClientResponse.schemaBodyJson(
             GetEscrowDetailResponse,
           )(response);
+
+          if (isErrorResponse(parsedResponse)) {
+            return yield* Effect.fail(
+              new ShopeeResponseError({
+                shopId,
+                apiPath,
+                requestId: parsedResponse.request_id,
+                error: parsedResponse.error,
+                message: parsedResponse.message,
+              }),
+            );
+          }
+
+          return parsedResponse.response;
         }).pipe(Effect.scoped);
       };
 

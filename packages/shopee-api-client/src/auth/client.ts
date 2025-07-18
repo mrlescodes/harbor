@@ -7,6 +7,8 @@ import {
 import { Effect } from "effect";
 
 import { ShopeeAPIConfig } from "../config";
+import { ShopeeResponseError } from "../errors";
+import { isErrorResponse } from "../schema";
 import { ShopeeTokenStorage } from "../token-storage";
 import {
   generateSignature,
@@ -92,17 +94,29 @@ export class ShopeeAuthClient extends Effect.Service<ShopeeAuthClient>()(
 
           const response = yield* client.execute(req);
 
-          const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
+          const parsedResponse = yield* HttpClientResponse.schemaBodyJson(
             GetAccessTokenResponse,
           )(response);
 
+          if (isErrorResponse(parsedResponse)) {
+            return yield* Effect.fail(
+              new ShopeeResponseError({
+                shopId,
+                apiPath,
+                requestId: parsedResponse.request_id,
+                error: parsedResponse.error,
+                message: parsedResponse.message,
+              }),
+            );
+          }
+
           yield* tokenStorage.storeToken(shopId, {
-            accessToken: tokenResponse.access_token,
-            refreshToken: tokenResponse.refresh_token,
-            expiresIn: tokenResponse.expire_in,
+            accessToken: parsedResponse.access_token,
+            refreshToken: parsedResponse.refresh_token,
+            expiresIn: parsedResponse.expire_in,
           });
 
-          return tokenResponse;
+          return parsedResponse;
         }).pipe(Effect.scoped);
       };
 
@@ -128,17 +142,29 @@ export class ShopeeAuthClient extends Effect.Service<ShopeeAuthClient>()(
 
           const response = yield* client.execute(req);
 
-          const tokenResponse = yield* HttpClientResponse.schemaBodyJson(
+          const parsedResponse = yield* HttpClientResponse.schemaBodyJson(
             RefreshAccessTokenResponse,
           )(response);
 
+          if (isErrorResponse(parsedResponse)) {
+            return yield* Effect.fail(
+              new ShopeeResponseError({
+                shopId,
+                apiPath,
+                requestId: parsedResponse.request_id,
+                error: parsedResponse.error,
+                message: parsedResponse.message,
+              }),
+            );
+          }
+
           yield* tokenStorage.storeToken(shopId, {
-            accessToken: tokenResponse.access_token,
-            refreshToken: tokenResponse.refresh_token,
-            expiresIn: tokenResponse.expire_in,
+            accessToken: parsedResponse.access_token,
+            refreshToken: parsedResponse.refresh_token,
+            expiresIn: parsedResponse.expire_in,
           });
 
-          return tokenResponse;
+          return parsedResponse;
         }).pipe(Effect.scoped);
       };
 
