@@ -2065,6 +2065,10 @@ export enum ArticleUpdateUserErrorCode {
   Invalid = 'INVALID',
   /** Can’t set isPublished to true and also set a future publish date. */
   InvalidPublishDate = 'INVALID_PUBLISH_DATE',
+  /** The metafield type is invalid. */
+  InvalidType = 'INVALID_TYPE',
+  /** The value is invalid for the metafield type or for the definition options. */
+  InvalidValue = 'INVALID_VALUE',
   /** The record with the ID used as the input value couldn't be found. */
   NotFound = 'NOT_FOUND',
   /** The input value is already taken. */
@@ -3586,7 +3590,7 @@ export type CalculatedReturn = {
   id: Scalars['ID']['output'];
   /** A list of calculated return line items. */
   returnLineItems: Array<CalculatedReturnLineItem>;
-  /** The calulated return shipping fee. */
+  /** The calculated return shipping fee. */
   returnShippingFee?: Maybe<CalculatedReturnShippingFee>;
 };
 
@@ -17547,7 +17551,7 @@ export type DraftOrderAvailableDeliveryOptions = {
   __typename?: 'DraftOrderAvailableDeliveryOptions';
   /** The available local delivery rates for the draft order. Requires a customer with a valid shipping address and at least one line item. */
   availableLocalDeliveryRates: Array<DraftOrderShippingRate>;
-  /** The available local pickup options for the draft order. Requires a customer with a valid shipping address and at least one line item. */
+  /** The available local pickup options for the draft order. Requires at least one line item. */
   availableLocalPickupOptions: Array<PickupInStoreLocation>;
   /** The available shipping rates for the draft order. Requires a customer with a valid shipping address and at least one line item. */
   availableShippingRates: Array<DraftOrderShippingRate>;
@@ -23626,6 +23630,7 @@ export type InventoryItemInput = {
   measurement?: InputMaybe<InventoryItemMeasurementInput>;
   /** The ISO 3166-2 alpha-2 province code of where the item originated from. */
   provinceCodeOfOrigin?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the inventory item needs to be physically shipped to the customer. Items that require shipping are physical products, while digital goods and services typically don't require shipping and can be fulfilled electronically. */
   requiresShipping?: InputMaybe<Scalars['Boolean']['input']>;
   /** The SKU (stock keeping unit) of the inventory item. */
   sku?: InputMaybe<Scalars['String']['input']>;
@@ -24557,6 +24562,8 @@ export enum InventoryShipmentReceiveUserErrorCode {
   InventoryStateNotActive = 'INVENTORY_STATE_NOT_ACTIVE',
   /** The item was not found. */
   ItemNotFound = 'ITEM_NOT_FOUND',
+  /** The location selected is not active. */
+  LocationNotActive = 'LOCATION_NOT_ACTIVE',
   /** The location selected can't be found. */
   LocationNotFound = 'LOCATION_NOT_FOUND',
   /** The shipment was not found. */
@@ -30941,6 +30948,8 @@ export enum MetafieldsSetUserErrorCode {
   Inclusion = 'INCLUSION',
   /** An internal error occurred. */
   InternalError = 'INTERNAL_ERROR',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
   /** The compareDigest is invalid. */
   InvalidCompareDigest = 'INVALID_COMPARE_DIGEST',
   /** The type is invalid. */
@@ -32739,12 +32748,14 @@ export type Mutation = {
    * Creates a new Amazon EventBridge webhook subscription.
    *
    * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   * @deprecated Use `webhookSubscriptionCreate` instead.
    */
   eventBridgeWebhookSubscriptionCreate?: Maybe<EventBridgeWebhookSubscriptionCreatePayload>;
   /**
    * Updates an Amazon EventBridge webhook subscription.
    *
    * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   * @deprecated Use `webhookSubscriptionUpdate` instead.
    */
   eventBridgeWebhookSubscriptionUpdate?: Maybe<EventBridgeWebhookSubscriptionUpdatePayload>;
   /** Acknowledges file update failure by resetting FAILED status to READY and clearing any media errors. */
@@ -34034,12 +34045,14 @@ export type Mutation = {
    * Creates a new Google Cloud Pub/Sub webhook subscription.
    *
    * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   * @deprecated Use `webhookSubscriptionCreate` instead.
    */
   pubSubWebhookSubscriptionCreate?: Maybe<PubSubWebhookSubscriptionCreatePayload>;
   /**
    * Updates a Google Cloud Pub/Sub webhook subscription.
    *
    * Building an app? If you only use app-specific webhooks, you won't need this. App-specific webhook subscriptions specified in your `shopify.app.toml` may be easier. They are automatically kept up to date by Shopify & require less maintenance. Please read [About managing webhook subscriptions](https://shopify.dev/docs/apps/build/webhooks/subscribe).
+   * @deprecated Use `webhookSubscriptionUpdate` instead.
    */
   pubSubWebhookSubscriptionUpdate?: Maybe<PubSubWebhookSubscriptionUpdatePayload>;
   /** Creates a publication. */
@@ -39751,6 +39764,8 @@ export type OrderCancelUserError = DisplayableError & {
 
 /** Possible error codes that can be returned by `OrderCancelUserError`. */
 export enum OrderCancelUserErrorCode {
+  /** Unexpected internal error happened. */
+  InternalError = 'INTERNAL_ERROR',
   /** The input value is invalid. */
   Invalid = 'INVALID',
   /** The record with the ID used as the input value couldn't be found. */
@@ -41660,6 +41675,8 @@ export type PageCreateUserError = DisplayableError & {
 export enum PageCreateUserErrorCode {
   /** The input value is blank. */
   Blank = 'BLANK',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
   /** Can’t set isPublished to true and also set a future publish date. */
   InvalidPublishDate = 'INVALID_PUBLISH_DATE',
   /** The metafield type is invalid. */
@@ -41668,6 +41685,8 @@ export enum PageCreateUserErrorCode {
   InvalidValue = 'INVALID_VALUE',
   /** The input value is already taken. */
   Taken = 'TAKEN',
+  /** The input value is too big. */
+  TooBig = 'TOO_BIG',
   /** The input value is too long. */
   TooLong = 'TOO_LONG'
 }
@@ -41789,6 +41808,8 @@ export type PageUpdateUserError = DisplayableError & {
 export enum PageUpdateUserErrorCode {
   /** The input value is blank. */
   Blank = 'BLANK',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
   /** Can’t set isPublished to true and also set a future publish date. */
   InvalidPublishDate = 'INVALID_PUBLISH_DATE',
   /** The metafield type is invalid. */
@@ -42358,7 +42379,7 @@ export type PreparedFulfillmentOrderLineItemsInput = {
   fulfillmentOrderId: Scalars['ID']['input'];
 };
 
-/** How to caluclate the parent product variant's price while bulk updating variant relationships. */
+/** How to calculate the parent product variant's price while bulk updating variant relationships. */
 export enum PriceCalculationType {
   /** The price of the parent will be the sum of the components price times their quantity. */
   ComponentsSum = 'COMPONENTS_SUM',
@@ -45238,9 +45259,10 @@ export type ProductCreateInput = {
   /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a gift card in a store. */
   giftCardTemplateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
-   * The handle is used in the online store URL for the product.
-   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   * A unique, human-readable string that's used to identify the product in URLs. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * If no handle is explicitly provided, then the title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses" and no handle is provided, then the handle `black-sunglasses` is generated (unless that handle
+   * is already taken, in which case a suffix is added to make the handle unique).
    */
   handle?: InputMaybe<Scalars['String']['input']>;
   /**
@@ -45273,7 +45295,7 @@ export type ProductCreateInput = {
    */
   status?: InputMaybe<ProductStatus>;
   /**
-   * A comma-separated list of searchable keywords that are
+   * A list of searchable keywords that are
    * associated with the product. For example, a merchant might apply the `sports`
    * and `summer` tags to products that are associated with sportwear for summer.
    *
@@ -45286,8 +45308,8 @@ export type ProductCreateInput = {
   /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a product in a store. */
   templateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * The name for the product that displays to customers. The title is used to construct the product's handle.
-   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   * The name for the product that displays to customers. If no handle is explicitly provided, then the title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses" and no handle is provided, then the handle `black-sunglasses` is generated.
    */
   title?: InputMaybe<Scalars['String']['input']>;
   /** The name of the product's vendor. */
@@ -45634,9 +45656,10 @@ export type ProductInput = {
   /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a gift card in a store. */
   giftCardTemplateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
-   * The handle is used in the online store URL for the product.
-   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   * A unique, human-readable string that's used to identify the product in URLs. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * If no handle is explicitly provided, then the title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses" and no handle is provided, then the handle `black-sunglasses` is generated (unless that handle
+   * is already taken, in which case a suffix is added to make the handle unique).
    */
   handle?: InputMaybe<Scalars['String']['input']>;
   /**
@@ -45688,7 +45711,7 @@ export type ProductInput = {
    */
   status?: InputMaybe<ProductStatus>;
   /**
-   * A comma-separated list of searchable keywords that are
+   * A list of searchable keywords that are
    * associated with the product. For example, a merchant might apply the `sports`
    * and `summer` tags to products that are associated with sportwear for summer.
    *
@@ -45701,8 +45724,8 @@ export type ProductInput = {
   /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a product in a store. */
   templateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * The name for the product that displays to customers. The title is used to construct the product's handle.
-   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   * The name for the product that displays to customers. If no handle is explicitly provided, then the title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses" and no handle is provided, then the handle `black-sunglasses` is generated.
    */
   title?: InputMaybe<Scalars['String']['input']>;
   /** The name of the product's vendor. */
@@ -46323,9 +46346,10 @@ export type ProductSetInput = {
   /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a gift card in a store. */
   giftCardTemplateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
-   * The handle is used in the online store URL for the product.
-   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   * A unique, human-readable string that's used to identify the product in URLs. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * If no handle is explicitly provided, then the title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses" and no handle is provided, then the handle `black-sunglasses` is generated (unless that handle
+   * is already taken, in which case a suffix is added to make the handle unique).
    */
   handle?: InputMaybe<Scalars['String']['input']>;
   /** The metafields to associate with this product. */
@@ -46352,7 +46376,7 @@ export type ProductSetInput = {
   /** The status of the product. */
   status?: InputMaybe<ProductStatus>;
   /**
-   * A comma-separated list of searchable keywords that are
+   * A list of searchable keywords that are
    * associated with the product. For example, a merchant might apply the `sports`
    * and `summer` tags to products that are associated with sportwear for summer.
    *
@@ -46365,8 +46389,8 @@ export type ProductSetInput = {
   /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a product in a store. */
   templateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * The name for the product that displays to customers. The title is used to construct the product's handle.
-   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   * The name for the product that displays to customers. If no handle is explicitly provided, then the title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses" and no handle is provided, then the handle `black-sunglasses` is generated.
    */
   title?: InputMaybe<Scalars['String']['input']>;
   /** A list of variants associated with the product. */
@@ -46602,9 +46626,10 @@ export type ProductUpdateInput = {
   /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a gift card in a store. */
   giftCardTemplateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * A unique, human-readable string of the product's title. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
-   * The handle is used in the online store URL for the product.
-   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   * A unique, human-readable string that's used to identify the product in URLs. A handle can contain letters, hyphens (`-`), and numbers, but no spaces.
+   * If no handle is explicitly provided, then the title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses" and no handle is provided, then the handle `black-sunglasses` is generated (unless that handle
+   * is already taken, in which case a suffix is added to make the handle unique).
    */
   handle?: InputMaybe<Scalars['String']['input']>;
   /** The product's ID. */
@@ -46642,7 +46667,7 @@ export type ProductUpdateInput = {
    */
   status?: InputMaybe<ProductStatus>;
   /**
-   * A comma-separated list of searchable keywords that are
+   * A list of searchable keywords that are
    * associated with the product. For example, a merchant might apply the `sports`
    * and `summer` tags to products that are associated with sportwear for summer.
    *
@@ -46655,8 +46680,8 @@ export type ProductUpdateInput = {
   /** The [theme template](https://shopify.dev/docs/storefronts/themes/architecture/templates) that's used when customers view a product in a store. */
   templateSuffix?: InputMaybe<Scalars['String']['input']>;
   /**
-   * The name for the product that displays to customers. The title is used to construct the product's handle.
-   * For example, if a product is titled "Black Sunglasses", then the handle is `black-sunglasses`.
+   * The name for the product that displays to customers. If no handle is explicitly provided, then the title is used to construct the product's handle.
+   * For example, if a product is titled "Black Sunglasses" and no handle is provided, then the handle `black-sunglasses` is generated.
    */
   title?: InputMaybe<Scalars['String']['input']>;
   /** The name of the product's vendor. */
@@ -47522,7 +47547,7 @@ export enum ProductVariantRelationshipBulkUpdateUserErrorCode {
   UnexpectedError = 'UNEXPECTED_ERROR',
   /** Multipack bundles are not supported. */
   UnsupportedMultipackRelationship = 'UNSUPPORTED_MULTIPACK_RELATIONSHIP',
-  /** A price must be provided for a parent product variant if the price calucation is set to fixed. */
+  /** A price must be provided for a parent product variant if the price calculation is set to fixed. */
   UpdateParentVariantPriceRequired = 'UPDATE_PARENT_VARIANT_PRICE_REQUIRED'
 }
 
@@ -48882,7 +48907,7 @@ export type QueryRoot = {
   carrierServices: DeliveryCarrierServiceConnection;
   /** List of Cart transform objects owned by the current API client. */
   cartTransforms: CartTransformConnection;
-  /** Lookup a cash tracking session by ID. */
+  /** Returns a `CashTrackingSession` resource by ID. */
   cashTrackingSession?: Maybe<CashTrackingSession>;
   /**
    * Returns a shop's cash tracking sessions for locations with a POS Pro subscription.
@@ -49018,13 +49043,13 @@ export type QueryRoot = {
   companies: CompanyConnection;
   /** The number of companies for a shop. Limited to a maximum of 10000 by default. */
   companiesCount?: Maybe<Count>;
-  /** Returns a `Company` object by ID. */
+  /** Returns a `Company` resource by ID. */
   company?: Maybe<Company>;
-  /** Returns a `CompanyContact` object by ID. */
+  /** Returns a `CompanyContact` resource by ID. */
   companyContact?: Maybe<CompanyContact>;
-  /** Returns a `CompanyContactRole` object by ID. */
+  /** Returns a `CompanyContactRole` resource by ID. */
   companyContactRole?: Maybe<CompanyContactRole>;
-  /** Returns a `CompanyLocation` object by ID. */
+  /** Returns a `CompanyLocation` resource by ID. */
   companyLocation?: Maybe<CompanyLocation>;
   /** Returns the list of company locations in the shop. */
   companyLocations: CompanyLocationConnection;
@@ -49180,7 +49205,7 @@ export type QueryRoot = {
   fulfillment?: Maybe<Fulfillment>;
   /** The fulfillment constraint rules that belong to a shop. */
   fulfillmentConstraintRules: Array<FulfillmentConstraintRule>;
-  /** Returns a Fulfillment order resource by ID. */
+  /** Returns a `FulfillmentOrder` resource by ID. */
   fulfillmentOrder?: Maybe<FulfillmentOrder>;
   /**
    * The paginated list of all fulfillment orders.
@@ -49262,7 +49287,7 @@ export type QueryRoot = {
   marketLocalizableResourcesByIds: MarketLocalizableResourceConnection;
   /** A list of marketing activities associated with the marketing app. */
   marketingActivities: MarketingActivityConnection;
-  /** Returns a MarketingActivity resource by ID. */
+  /** Returns a `MarketingActivity` resource by ID. */
   marketingActivity?: Maybe<MarketingActivity>;
   /** Returns a `MarketingEvent` resource by ID. */
   marketingEvent?: Maybe<MarketingEvent>;
@@ -49365,7 +49390,7 @@ export type QueryRoot = {
   paymentTermsTemplates: Array<PaymentTermsTemplate>;
   /** The number of pendings orders. Limited to a maximum of 10000. */
   pendingOrdersCount?: Maybe<Count>;
-  /** Lookup a point of sale device by ID. */
+  /** Returns a `PointOfSaleDevice` resource by ID. */
   pointOfSaleDevice?: Maybe<PointOfSaleDevice>;
   /** Returns a price list resource by ID. */
   priceList?: Maybe<PriceList>;
@@ -51708,7 +51733,6 @@ export type QueryRootWebhookSubscriptionArgs = {
 export type QueryRootWebhookSubscriptionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  callbackUrl?: InputMaybe<Scalars['URL']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   format?: InputMaybe<WebhookSubscriptionFormat>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -58367,39 +58391,6 @@ export enum ShopifyPaymentsTransactionType {
   VatRefundCreditReversal = 'VAT_REFUND_CREDIT_REVERSAL'
 }
 
-/**
- * Each subject (individual) of an account has a verification object giving
- *  information about the verification state.
- */
-export type ShopifyPaymentsVerification = Node & {
-  __typename?: 'ShopifyPaymentsVerification';
-  /** A globally-unique ID. */
-  id: Scalars['ID']['output'];
-  /** The status of the verification. */
-  status: ShopifyPaymentsVerificationStatus;
-  /** The subject/individual who has to be verified. */
-  subject: ShopifyPaymentsVerificationSubject;
-};
-
-/** The status of a verification. */
-export enum ShopifyPaymentsVerificationStatus {
-  /** The verification request has been submitted but a response has not yet been given. */
-  Pending = 'PENDING',
-  /** The verification has not yet been verified. */
-  Unverified = 'UNVERIFIED',
-  /** The verification has been verified. */
-  Verified = 'VERIFIED'
-}
-
-/** The verification subject represents an individual that has to be verified. */
-export type ShopifyPaymentsVerificationSubject = {
-  __typename?: 'ShopifyPaymentsVerificationSubject';
-  /** The family name of the individual to verify. */
-  familyName: Scalars['String']['output'];
-  /** The given name of the individual to verify. */
-  givenName: Scalars['String']['output'];
-};
-
 /** The status of an order's eligibility for protection against fraudulent chargebacks by Shopify Protect. */
 export enum ShopifyProtectEligibilityStatus {
   /**
@@ -63825,6 +63816,8 @@ export enum ValidationUserErrorCode {
   Inclusion = 'INCLUSION',
   /** An internal error occurred. */
   InternalError = 'INTERNAL_ERROR',
+  /** The input value is invalid. */
+  Invalid = 'INVALID',
   /** The type is invalid. */
   InvalidType = 'INVALID_TYPE',
   /** The value is invalid for the metafield type or for the definition options. */
@@ -64036,68 +64029,6 @@ export type WebPixelUpdatePayload = {
   webPixel?: Maybe<WebPixel>;
 };
 
-/**
- * This can be a domain (e.g. `example.ca`), subdomain (e.g. `ca.example.com`), or subfolders of the primary
- * domain (e.g. `example.com/en-ca`). Each web presence comprises one or more language
- * variants.
- *
- * Note: while the domain/subfolders defined by a web presence are not applicable to
- * custom storefronts, which must manage their own domains and routing, the languages chosen
- * here do govern [the languages available on the Storefront
- * API](https://shopify.dev/custom-storefronts/internationalization/multiple-languages) for the countries
- * using this web presence.
- */
-export type WebPresence = Node & {
-  __typename?: 'WebPresence';
-  /**
-   * The ShopLocale object for the alternate locales. When a domain is used, these locales will be
-   * available as language-specific subfolders. For example, if English is an
-   * alternate locale, and `example.ca` is the domain, then
-   * `example.ca/en` will load in English.
-   */
-  alternateLocales: Array<ShopLocale>;
-  /**
-   * The ShopLocale object for the default locale. When a domain is used, this is the locale that will
-   * be used when the domain root is accessed. For example, if French is the default locale,
-   * and `example.ca` is the domain, then `example.ca` will load in French.
-   */
-  defaultLocale: ShopLocale;
-  /** The web presence’s domain. This field will be null if `subfolderSuffix` is present. */
-  domain?: Maybe<Domain>;
-  /** A globally-unique ID. */
-  id: Scalars['ID']['output'];
-  /** The associated markets for this web presence. */
-  markets?: Maybe<MarketConnection>;
-  /** The list of root URLs for each of the web presence’s locales. */
-  rootUrls: Array<WebPresenceRootUrl>;
-  /**
-   * The suffix of the subfolders defined by the web presence.
-   * Example: in `/en-us` the subfolder suffix is `us`.
-   * This field will be null if `domain` isn't null.
-   */
-  subfolderSuffix?: Maybe<Scalars['String']['output']>;
-};
-
-
-/**
- * This can be a domain (e.g. `example.ca`), subdomain (e.g. `ca.example.com`), or subfolders of the primary
- * domain (e.g. `example.com/en-ca`). Each web presence comprises one or more language
- * variants.
- *
- * Note: while the domain/subfolders defined by a web presence are not applicable to
- * custom storefronts, which must manage their own domains and routing, the languages chosen
- * here do govern [the languages available on the Storefront
- * API](https://shopify.dev/custom-storefronts/internationalization/multiple-languages) for the countries
- * using this web presence.
- */
-export type WebPresenceMarketsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  reverse?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 /** The input fields used to create a web presence. */
 export type WebPresenceCreateInput = {
   /** The alternate locales for the web presence. */
@@ -64130,18 +64061,6 @@ export type WebPresenceDeletePayload = {
   deletedId?: Maybe<Scalars['ID']['output']>;
   /** The list of errors that occurred from executing the mutation. */
   userErrors: Array<MarketUserError>;
-};
-
-/**
- * The URL for the homepage of the online store in the context of the web presence and a
- * particular locale.
- */
-export type WebPresenceRootUrl = {
-  __typename?: 'WebPresenceRootUrl';
-  /** The locale that the storefront loads in. */
-  locale: Scalars['String']['output'];
-  /** The URL. */
-  url: Scalars['URL']['output'];
 };
 
 /** The input fields used to update a web presence. */
@@ -64203,12 +64122,15 @@ export type WebhookSubscription = LegacyInteroperability & Node & {
   apiVersion: ApiVersion;
   /**
    * The destination URI to which the webhook subscription will send a message when an event occurs.
-   * @deprecated Use `endpoint` instead.
+   * @deprecated Use `uri` instead.
    */
   callbackUrl: Scalars['URL']['output'];
   /** The date and time when the webhook subscription was created. */
   createdAt: Scalars['DateTime']['output'];
-  /** The endpoint to which the webhook subscription will send events. */
+  /**
+   * The endpoint to which the webhook subscription will send events.
+   * @deprecated Use `uri` instead.
+   */
   endpoint: WebhookSubscriptionEndpoint;
   /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. See our [guide on filters](https://shopify.dev/docs/apps/build/webhooks/customize/filters) for more details. */
   filter?: Maybe<Scalars['String']['output']>;
@@ -64279,8 +64201,6 @@ export enum WebhookSubscriptionFormat {
 
 /** The input fields for a webhook subscription. */
 export type WebhookSubscriptionInput = {
-  /** URL where the webhook subscription should send the POST request when the event occurs. */
-  callbackUrl?: InputMaybe<Scalars['URL']['input']>;
   /** A constraint specified using search syntax that ensures only webhooks that match the specified filter are emitted. See our [guide on filters](https://shopify.dev/docs/apps/build/webhooks/customize/filters) for more details. */
   filter?: InputMaybe<Scalars['String']['input']>;
   /** The format in which the webhook subscription should send the data. */

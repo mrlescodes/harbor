@@ -33,7 +33,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "graphql-codegen": "graphql-codegen"
+    "generate-types": "graphql-codegen"
   },
   "dependencies": {
     "@harbor/database": "workspace:*",
